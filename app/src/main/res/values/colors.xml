@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#FFFFFF</color>
+    <color name="colorPrimaryDark">#FFFFFF</color>
+    <!--<color name="colorPrimaryDark">#FAFAFA</color>-->
+    <color name="colorAccent">#EE3D96</color>
+
+    <color name="colorDarkOverlay">#CC000000</color>
+    <color name="colorDarkOverlay2">#99000000</color>
+
+    <color name="colorPurple">#583F99</color>
+    <color name="colorPurpleOverlay">#EE583F99</color>
+    <color name="colorPurpleOverlay2">#88583F99</color>
+    <color name="colorPurpleLight">#7769AF</color>
+    <color name="colorPurpleLightOverlay">#e7d8f0</color>
+    <color name="colorPurpleDark">#412f8e</color>
+
+    <color name="color2F2F2F">#2f2f2f</color>
+    <color name="color646464">#646464</color>
+    <color name="color939598">#939598</color>
+    <color name="colorE6E7E8">#e6e7e8</color>
+    <color name="colorD6D7E9">#d6d7e9</color>
+
+
+    <color name="colorYellow">#FFFF00</color>
+    <color name="colorRed">#FF0000</color>
+    <color name="colorGreen">#008000</color>
+    <color name="colorBlue">#0000FF</color>
+
+    <color name="colorFbBlue">#3b5998</color>
+
+</resources>

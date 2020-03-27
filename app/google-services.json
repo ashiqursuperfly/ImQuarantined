@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "250829595885",
+    "firebase_url": "https://imquarantined.firebaseio.com",
+    "project_id": "imquarantined",
+    "storage_bucket": "imquarantined.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:250829595885:android:81feb81c2cb803cc1718e4",
+        "android_client_info": {
+          "package_name": "com.imquarantined"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "250829595885-o8cdoh8o81qj9hgf7hbb7h54ak3o6qkv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.imquarantined",
+            "certificate_hash": "05cfd161a5374ef831c7497ba5984a5cceed8d22"
+          }
+        },
+        {
+          "client_id": "250829595885-qu00cheq7112ak8ev1ocg83757imdb46.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkrOrAvksCmSAg1xeOLlQF8I_MAAbNQdY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "250829595885-qu00cheq7112ak8ev1ocg83757imdb46.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
