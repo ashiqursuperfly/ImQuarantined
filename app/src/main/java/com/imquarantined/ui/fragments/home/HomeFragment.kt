@@ -61,7 +61,7 @@ class HomeFragment : BaseFragment() {
                         if (task.isSuccessful) {
                             val idToken: String = task.result?.token ?:""
                             Timber.i("Token$idToken")
-                            mHomeViewModel.loggin(idToken)
+                            mHomeViewModel.login(idToken)
                         } else {
                             showToast(task.exception?.message.toString())
                             Timber.e(task.exception?.message.toString())
