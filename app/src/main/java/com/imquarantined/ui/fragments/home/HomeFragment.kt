@@ -20,7 +20,6 @@ class HomeFragment : BaseFragment() {
 
     val mHomeViewModel: HomeViewModel by viewModels()
 
-
     override fun getLayoutId(): Int {
         return R.layout.fragment_home
     }
@@ -29,7 +28,6 @@ class HomeFragment : BaseFragment() {
         observeData()
         setToolBarData()
         initFirebaseAuthUI()
-
     }
 
     private fun observeData() {
@@ -56,7 +54,6 @@ class HomeFragment : BaseFragment() {
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 val user = FirebaseAuth.getInstance().currentUser
-                showToast("Welcome: ${user?.displayName}")
                 DialogUtil.showLoader(requireContext())
 
                 FirebaseAuthUtil.getUser()?.getIdToken(true)
@@ -64,7 +61,7 @@ class HomeFragment : BaseFragment() {
                         if (task.isSuccessful) {
                             val idToken: String = task.result?.token ?:""
                             Timber.i("Token$idToken")
-                            mHomeViewModel.login(idToken)
+                            mHomeViewModel.loggin(idToken)
                         } else {
                             showToast(task.exception?.message.toString())
                             Timber.e(task.exception?.message.toString())

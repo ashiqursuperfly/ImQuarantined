@@ -5,6 +5,7 @@ import com.imquarantined.data.Const
 import com.imquarantined.ui.base.BaseViewModel
 import com.imquarantined.util.helper.FirebaseAuthUtil
 import com.imquarantined.util.helper.PrefUtil
+import com.imquarantined.util.helper.Toaster.showToast
 
 class HomeViewModel : BaseViewModel() {
 
@@ -16,6 +17,7 @@ class HomeViewModel : BaseViewModel() {
         // make api call, the token and verify
         // set pref only after backend verifies the user
         mLoginLiveData.postValue(true)
+        showToast("Welcome")
 
     }
 
