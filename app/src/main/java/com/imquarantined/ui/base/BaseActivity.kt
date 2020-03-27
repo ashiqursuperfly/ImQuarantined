@@ -128,4 +128,6 @@ abstract class BaseActivity: AppCompatActivity(), View.OnClickListener {
         super.onDestroy()
     }
 
+
+
 }

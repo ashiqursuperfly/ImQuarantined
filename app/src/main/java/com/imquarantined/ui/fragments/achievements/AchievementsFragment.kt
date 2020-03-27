@@ -1,15 +1,14 @@
 package com.imquarantined.ui.fragments.achievements
 
+import com.imquarantined.R
 import com.imquarantined.ui.base.BaseFragment
-
 /* Created by ashiq.buet16 **/
 
-class AchievementsFragment : BaseFragment(){
+class AchievementsFragment : BaseFragment() {
     override fun getLayoutId(): Int {
-        TODO("Not yet implemented")
+        return R.layout.fragment_achievements
     }
 
     override fun afterOnViewCreated() {
-        TODO("Not yet implemented")
     }
 }
