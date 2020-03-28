@@ -1,5 +1,6 @@
 package com.imquarantined.ui.fragments.home
 
+import android.hardware.SensorManager
 import androidx.lifecycle.MutableLiveData
 import com.imquarantined.data.Const
 import com.imquarantined.data.LocationData
@@ -10,8 +11,10 @@ import com.imquarantined.util.helper.Toaster.showToast
 
 class HomeViewModel : BaseViewModel() {
 
+    var isCalibrationDone = false
     var mLocationData : LocationData? = null
     val mLoginLiveData = MutableLiveData<Boolean>()
+    var atmosphericPressure  = SensorManager.PRESSURE_STANDARD_ATMOSPHERE
 
     fun login(idToken: String) {
         PrefUtil.set(Const.PrefProp.LOGIN_TOKEN, idToken)

@@ -2,7 +2,6 @@ package com.imquarantined.ui.fragments.home
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.hardware.Sensor
@@ -11,7 +10,6 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
-import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -67,6 +65,7 @@ class HomeFragment : BaseFragment(),LocationListener {
 
     private fun setupLocationTracking() {
         PermissionsUtil.requestPermission(requireContext(),requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION, getString(R.string.denied_location_permission))
+
         if(PermissionsUtil.isPermissionAllowed(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)){
             if(enableGPS()){
                 gpsUtil.findLocation(requireActivity(),this)
@@ -114,19 +113,16 @@ class HomeFragment : BaseFragment(),LocationListener {
     }
 
     private fun setupBarometer(){
-        tv_sensor_data.text = "Barometer data"
         val isSensorSet = SensorUtil.setSensor(Sensor.TYPE_PRESSURE, object : SensorEventListener {
             override fun onSensorChanged(sensorEvent: SensorEvent) {
-                tv_sensor_data.text = Arrays.toString(sensorEvent.values)
+                val sensorData = sensorEvent.values
+                mHomeViewModel.atmosphericPressure = sensorData[0]
             }
-            override fun onAccuracyChanged(sensor: Sensor, i: Int) {
-                showToast("Barometer Accuracy Changed")
-
-            }
+            override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
         }, requireActivity())
 
         if (!isSensorSet) {
-            showToast("Device doesn't support barometer")
+            Timber.i("Device doesn't support barometer. Using Standard Pressure")
         }
     }
 
@@ -134,6 +130,22 @@ class HomeFragment : BaseFragment(),LocationListener {
         super.onResume()
         checkAuthentication()
         setupBarometer()
+        calibrateSensors()
+    }
+
+    private fun calibrateSensors() {
+        val task = CustomTimerTask()
+        task.setCallback(object: CustomTimerTask.TimerCallback {
+            override fun onTime() {
+                activity?.runOnUiThread {  mHomeViewModel.isCalibrationDone = true }
+            }
+        })
+
+        val n = Const.Misc.LocationRequestPeriodMillis*Const.Misc.CalibrationPoints
+        val timer = Timer()
+        showLongToast("Calibrating ....")
+        mHomeViewModel.isCalibrationDone = false
+        timer.schedule(task, n)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -171,10 +183,15 @@ class HomeFragment : BaseFragment(),LocationListener {
 
     override fun onLocationChanged(location: Location?) {
         if (location != null) {
-            val alt =SensorManager.getAltitude(SensorUtil.getSealevelPressure(location.altitude.toFloat(), SensorManager.PRESSURE_STANDARD_ATMOSPHERE), SensorManager.PRESSURE_STANDARD_ATMOSPHERE)
+            val alt =SensorManager.getAltitude(
+                SensorUtil.getSealevelPressure(
+                    location.altitude.toFloat(),
+                    mHomeViewModel.atmosphericPressure
+                ),
+                mHomeViewModel.atmosphericPressure
+            )
 
             mHomeViewModel.mLocationData = LocationData(location.latitude, location.longitude, alt.toDouble())
-            tv_sensor_data.text = mHomeViewModel.mLocationData.toString()
         }
     }
 

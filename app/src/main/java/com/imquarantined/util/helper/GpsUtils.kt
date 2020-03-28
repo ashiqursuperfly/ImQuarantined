@@ -3,14 +3,10 @@ package com.imquarantined.util.helper
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.LocationListener
 import android.location.LocationManager
-import android.provider.Settings
-import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import com.imquarantined.data.Const
 
@@ -34,7 +30,7 @@ class GPSUtil  {
             criteria.powerRequirement = Criteria.POWER_HIGH
             val locationProvider = locationManager.getBestProvider(criteria, true)
 
-            locationManager.requestLocationUpdates(locationProvider!!, Const.Misc.LocationRequestPeriod, 0.0f, locationListener)
+            locationManager.requestLocationUpdates(locationProvider!!, Const.Misc.LocationRequestPeriodMillis, 0.0f, locationListener)
 
         }
 
