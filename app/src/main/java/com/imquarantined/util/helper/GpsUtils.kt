@@ -8,6 +8,7 @@ import android.location.Criteria
 import android.location.LocationListener
 import android.location.LocationManager
 import androidx.core.app.ActivityCompat
+
 import com.imquarantined.data.Const
 
 /* Created by ashiq.buet16 **/
@@ -37,10 +38,16 @@ class GPSUtil  {
     }
 
     fun isGpsEnabled(activity: Activity) : Boolean{
-        val locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
 
 
 }
+/*val fused = LocationServices.getFusedLocationProviderClient(activity)
+val locationRequest = LocationRequest()
+locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+locationRequest.interval = Const.Misc.LocationRequestPeriodMillis
+locationRequest.fastestInterval = Const.Misc.LocationRequestPeriodMillis/2
+fused.requestLocationUpdates()*/
