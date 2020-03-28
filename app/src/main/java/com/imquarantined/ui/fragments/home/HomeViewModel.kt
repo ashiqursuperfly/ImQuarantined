@@ -9,6 +9,7 @@ import com.imquarantined.util.helper.Toaster.showToast
 
 class HomeViewModel : BaseViewModel() {
 
+    var mLocationData = Pair(0.0,0.0)
     val mLoginLiveData = MutableLiveData<Boolean>()
 
     fun login(idToken: String) {

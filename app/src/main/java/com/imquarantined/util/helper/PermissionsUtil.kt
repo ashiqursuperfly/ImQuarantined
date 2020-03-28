@@ -16,18 +16,18 @@ import timber.log.Timber
 
 object PermissionsUtil {
 
-    fun requestCameraPermission(context: Context, activity: Activity) {
+    fun requestPermission(context: Context, activity: Activity, permission: String, errorMsgIfDenied:String = "Permission Denied") {
 
-        if (!checkCameraPermission(context)) {
+        if (!isPermissionAllowed(context,permission)) {
             Dexter.withActivity(activity)
-                .withPermission(Manifest.permission.CAMERA)
+                .withPermission(permission)
                 .withListener(object : PermissionListener {
                     override fun onPermissionGranted(response: PermissionGrantedResponse) {
                         Toaster.showToast("Permission Granted")
                     }
 
                     override fun onPermissionDenied(response: PermissionDeniedResponse) {
-                        Toaster.showToast("Please enable camera permission.")
+                        Toaster.showLongToast(errorMsgIfDenied)
                     }
 
                     override fun onPermissionRationaleShouldBeShown(
@@ -40,10 +40,10 @@ object PermissionsUtil {
         }
     }
 
-    fun checkCameraPermission(context: Context): Boolean {
+    fun isPermissionAllowed(context: Context, permission: String): Boolean {
         val pm: PackageManager = context.packageManager
         val hasPermission = pm.checkPermission(
-            Manifest.permission.CAMERA,
+            permission,
             context.packageName
         )
         Timber.d("Permission Status:$hasPermission")

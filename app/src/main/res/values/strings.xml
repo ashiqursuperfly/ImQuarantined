@@ -3,4 +3,6 @@
     <string name="facebook_application_id" translatable="false">263523148010812</string>
     <string name="facebook_login_protocol_scheme" translatable="false">fb263523148010812</string>
     <string name="facebook_app_key_hash" translatable="false">Bc/RYaU3Tvgxx0l7pZhKXM7tjSI=</string>
+    <string name="denied_location_permission">Hey There! Looks like you have denied location permission. We dont do that here :) Not cool :) Please enable your location settings.</string>
+    <string name="enable_gps_to_proceed">Please enable GPS. Otherwise, we cant proceed :\"(</string>
 </resources>
