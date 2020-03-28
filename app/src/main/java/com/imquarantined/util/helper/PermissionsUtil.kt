@@ -30,7 +30,7 @@ object PermissionsUtil {
             permission,
             context.packageName
         )
-        Timber.d("Permission Status:$hasPermission")
+        // Timber.d("Permission Status:$hasPermission")
         return hasPermission == PackageManager.PERMISSION_GRANTED
     }
 

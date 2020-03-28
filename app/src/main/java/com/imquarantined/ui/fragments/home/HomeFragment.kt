@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.view.View
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -14,6 +15,8 @@ import com.firebase.ui.auth.IdpResponse
 import com.imquarantined.BuildConfig
 import com.imquarantined.R
 import com.imquarantined.data.Const
+import com.imquarantined.db.AppDb
+import com.imquarantined.db.LocationDao
 import com.imquarantined.ui.base.BaseFragment
 import com.imquarantined.ui.service.Actions
 import com.imquarantined.ui.service.EndlessService
@@ -27,6 +30,7 @@ import com.karumi.dexter.listener.PermissionDeniedResponse
 import com.karumi.dexter.listener.PermissionGrantedResponse
 import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
+import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
 
 class HomeFragment : BaseFragment(){
@@ -40,15 +44,31 @@ class HomeFragment : BaseFragment(){
 
     override fun afterOnViewCreated() {
         observeData()
-        if(!gpsUtil.isGpsEnabled(requireContext()))actionOnService(Actions.STOP)
+
+        //TODO: remove this
+        setClickListener(btn_dummy)
+
+        if (!mHomeViewModel.isUserLoggedIn()) startActivityForResult(FirebaseAuthUtil.getIntent(), Const.RequestCode.FIREBASE_AUTH)
+
+        if(!shouldStartService())actionOnService(Actions.STOP)
+
         val thread = Thread(object: Runnable{
             override fun run() {
-                while (!gpsUtil.isGpsEnabled(requireContext()));
+                while (true){
+                    if (shouldStartService()) break
+                }
                 actionOnService(Actions.START)
             }
 
         })
         thread.start()
+
+
+    }
+
+    override fun onClick(v: View?) {
+        //TODO: remove this
+        mHomeViewModel.signOut()
     }
 
     private fun observeData() {
@@ -61,17 +81,17 @@ class HomeFragment : BaseFragment(){
         })
     }
 
-    private fun checkAuthenticationAndStartLocationTracking() {
-
-        if (!mHomeViewModel.isUserLoggedIn())
-            startActivityForResult(FirebaseAuthUtil.getIntent(), Const.RequestCode.FIREBASE_AUTH)
-        else {
-            // showToast("Already Logged In.")
-            initLocationTracking()
-        }
+    private fun shouldStartService() : Boolean {
+        if (gpsUtil.isGpsEnabled(requireContext())
+            && mHomeViewModel.isUserLoggedIn()
+            && PermissionsUtil.isPermissionAllowed(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
+        )return true
+        else return false
     }
 
     private fun initLocationTracking() {
+
+        if(!mHomeViewModel.isUserLoggedIn())return
 
         if(PermissionsUtil.isPermissionAllowed(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)){
             enableGPS()
@@ -152,12 +172,11 @@ class HomeFragment : BaseFragment(){
 
     override fun onResume() {
         super.onResume()
-        checkAuthenticationAndStartLocationTracking()
+        if(mHomeViewModel.isUserLoggedIn())initLocationTracking()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        showToast("Activity result")
         if (requestCode == Const.RequestCode.FIREBASE_AUTH) {
             val response = IdpResponse.fromResultIntent(data)
 
@@ -168,7 +187,7 @@ class HomeFragment : BaseFragment(){
                     ?.addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             val idToken: String = task.result?.token ?: ""
-                            Timber.i("Token$idToken")
+                            Timber.i("Token\n$idToken")
                             mHomeViewModel.login(idToken)
                         } else {
                             showToast(task.exception?.message.toString())

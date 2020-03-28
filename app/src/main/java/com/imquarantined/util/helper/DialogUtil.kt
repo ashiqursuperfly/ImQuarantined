@@ -10,6 +10,7 @@ import androidx.databinding.DataBindingUtil
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.imquarantined.R
 import com.imquarantined.databinding.LayoutProgressBarBinding
+import com.imquarantined.databinding.PromptNoNetworkBinding
 
 /* Created by ashiq.buet16 **/
 
@@ -70,4 +71,29 @@ object DialogUtil {
             .setCancelable(cancelable)
             .create()
     }
+    interface NoNetworkDialogCallback {
+        fun onClickRefresh()
+    }
+    fun noNetworkDialog(
+        context: Context,
+        cancelable: Boolean = false,
+        callback: NoNetworkDialogCallback? = null
+    ): AlertDialog {
+
+        val binding = DataBindingUtil.inflate<PromptNoNetworkBinding>(
+            LayoutInflater.from(context), R.layout.prompt_no_network, null, false
+        )
+
+        binding.btnAction.setOnClickListener {
+            callback?.onClickRefresh()
+        }
+
+        val dialog = DialogUtil.createCustomDialog(context, binding.root, cancelable)
+
+        dialog.show()
+
+        return dialog
+    }
+
+
 }
