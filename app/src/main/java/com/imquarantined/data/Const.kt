@@ -4,8 +4,9 @@ class Const {
 
     object Misc {
 
-        const val CalibrationPoints = 10
-        const val LocationRequestPeriodMillis = 10000L //
+        const val calibrationPoints = 10
+        const val locationRequestPeriodMillis = 10000L // TODO: before deploying it should be bgTaskPeriod/3
+        const val backgroundTaskPeriod =  3 * locationRequestPeriodMillis
     }
 
     object RequestResult {

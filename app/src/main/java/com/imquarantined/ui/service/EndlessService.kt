@@ -39,7 +39,14 @@ class EndlessService : Service(), LocationListener {
     var i=0
     private fun backgroundWork() {
         //TODO:
-        Timber.d("Doing BG work: $i")
+        // 0. Check if gps still enabled, if not then record timestamp on sharedPref.
+        // Also create a notification, saying please enable location otherwise your streak will be broken. if
+        // 1. See if having wifi network
+        // 2. If yes push to server
+        // 3. Else push to local database
+        // 4.
+        Timber.d("**BGWORK** Location $i: $mLocationData")
+
     }
 
     private fun setupLocationTracking() {
@@ -78,7 +85,7 @@ class EndlessService : Service(), LocationListener {
             }
         })
 
-        val n = Const.Misc.LocationRequestPeriodMillis* Const.Misc.CalibrationPoints
+        val n = Const.Misc.locationRequestPeriodMillis* Const.Misc.calibrationPoints
         val timer = Timer()
         isCalibrationDone = false
         timer.schedule(task, n)
@@ -168,7 +175,7 @@ class EndlessService : Service(), LocationListener {
                 launch(Dispatchers.IO) {
                     backgroundWork()
                 }
-                delay(1 * 60 * 1000)
+                delay(Const.Misc.backgroundTaskPeriod)
             }
             Timber.i("End of the loop for the service")
         }

@@ -1,7 +1,6 @@
 package com.imquarantined.util.helper
 
 import android.Manifest
-import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Criteria
@@ -31,7 +30,7 @@ class GPSUtil  {
             criteria.powerRequirement = Criteria.POWER_HIGH
             val locationProvider = locationManager.getBestProvider(criteria, true)
 
-            locationManager.requestLocationUpdates(locationProvider!!, Const.Misc.LocationRequestPeriodMillis, 0.0f, locationListener)
+            locationManager.requestLocationUpdates(locationProvider!!, Const.Misc.locationRequestPeriodMillis, 0.0f, locationListener)
 
         }
 
