@@ -54,11 +54,11 @@ class HomeFragment : BaseFragment(),LocationListener {
     }
 
     private fun checkAuthentication() {
-        //TODO: check isSigned in using sharedPref
-        if (FirebaseAuthUtil.getUser() == null)
+
+        if (!mHomeViewModel.isUserLoggedIn())
             startActivityForResult(FirebaseAuthUtil.getIntent(), Const.RequestCode.FIREBASE_AUTH)
         else {
-            showToast("Already Logged In.")
+            // showToast("Already Logged In.")
             setupLocationTracking()
         }
     }
@@ -143,7 +143,6 @@ class HomeFragment : BaseFragment(),LocationListener {
 
         val n = Const.Misc.LocationRequestPeriodMillis*Const.Misc.CalibrationPoints
         val timer = Timer()
-        showLongToast("Calibrating ....")
         mHomeViewModel.isCalibrationDone = false
         timer.schedule(task, n)
     }

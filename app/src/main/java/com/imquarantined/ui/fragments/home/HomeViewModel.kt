@@ -31,5 +31,10 @@ class HomeViewModel : BaseViewModel() {
         FirebaseAuthUtil.signOut()
     }
 
+    fun isUserLoggedIn(): Boolean {
+        val token = PrefUtil.get(Const.PrefProp.LOGIN_TOKEN, "-1")
+        return token != "-1"
+    }
+
 
 }
