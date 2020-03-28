@@ -40,7 +40,6 @@ class HomeFragment : BaseFragment(){
 
     override fun afterOnViewCreated() {
         observeData()
-
         if(!gpsUtil.isGpsEnabled(requireContext()))actionOnService(Actions.STOP)
         val thread = Thread(object: Runnable{
             override fun run() {
@@ -50,7 +49,6 @@ class HomeFragment : BaseFragment(){
 
         })
         thread.start()
-
     }
 
     private fun observeData() {
@@ -61,7 +59,6 @@ class HomeFragment : BaseFragment(){
                 initLocationTracking()
             }
         })
-
     }
 
     private fun checkAuthenticationAndStartLocationTracking() {

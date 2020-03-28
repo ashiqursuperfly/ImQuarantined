@@ -29,7 +29,10 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
-class EndlessService : Service(), LocationListener {
+class EndlessService : Service(), CustomServiceTask {
+
+    private lateinit var mPressureSensorListener: SensorEventListener
+    private lateinit var mLocationListener: LocationListener
 
     private var gpsUtil = GPSUtil()
     var mLocationData : LocationData? = null
@@ -37,7 +40,7 @@ class EndlessService : Service(), LocationListener {
     var isCalibrationDone = false
 
     var i=0
-    private fun backgroundWork() {
+    override fun backGroundWork() {
         //TODO:
         // 0. Check if gps still enabled, if not then record timestamp on sharedPref.
         // Also create a notification, saying please enable location otherwise your streak will be broken. if
@@ -50,27 +53,55 @@ class EndlessService : Service(), LocationListener {
     }
 
     private fun setupLocationTracking() {
+        mLocationListener = object: LocationListener {
+            override fun onLocationChanged(location: Location?) {
+                if (location != null) {
+                    val alt = SensorManager.getAltitude(
+                        SensorUtil.getSealevelPressure(location.altitude.toFloat(), atmosphericPressure),
+                        atmosphericPressure
+                    )
+
+                    mLocationData = LocationData(location.latitude, location.longitude, alt.toDouble())
+                }
+            }
+
+            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
+
+            override fun onProviderEnabled(provider: String?) {}
+
+            override fun onProviderDisabled(provider: String?) {}
+
+        }
+
         if(gpsUtil.isGpsEnabled(this)){
-            gpsUtil.findLocation(this,this)
+            gpsUtil.registerLocationListener(this,mLocationListener)
         }else {
             //TODO: Record Error on local db or server
         }
     }
 
-    private fun initBackgroundWork() {
+    override fun initBackGroundWork() {
         setupLocationTracking()
         setupBarometer()
         calibrateSensors()
     }
 
+    override fun endBackGroundWork() {
+        gpsUtil.unregisterLocationListener(this, mLocationListener)
+        SensorUtil.unregisterListener(this, mPressureSensorListener)
+    }
+
     private fun setupBarometer(){
-        val isSensorSet = SensorUtil.setSensor(Sensor.TYPE_PRESSURE, object : SensorEventListener {
+
+        mPressureSensorListener = object : SensorEventListener {
             override fun onSensorChanged(sensorEvent: SensorEvent) {
                 val sensorData = sensorEvent.values
                 atmosphericPressure = sensorData[0]
             }
             override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
-        }, this)
+        }
+
+        val isSensorSet = SensorUtil.setSensor(Sensor.TYPE_PRESSURE,mPressureSensorListener, this)
 
         if (!isSensorSet) {
             Timber.i("Device doesn't support barometer. Using Standard Pressure")
@@ -91,25 +122,6 @@ class EndlessService : Service(), LocationListener {
         timer.schedule(task, n)
     }
 
-    override fun onLocationChanged(location: Location?) {
-        if (location != null) {
-            val alt = SensorManager.getAltitude(
-                SensorUtil.getSealevelPressure(
-                    location.altitude.toFloat(),
-                    atmosphericPressure
-                ),
-                atmosphericPressure
-            )
-
-            mLocationData = LocationData(location.latitude, location.longitude, alt.toDouble())
-        }
-    }
-
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {}
-
-    override fun onProviderEnabled(provider: String?) {}
-
-    override fun onProviderDisabled(provider: String?) {}
 
     /* The following code should never be changed */
     private var wakeLock: PowerManager.WakeLock? = null
@@ -143,13 +155,14 @@ class EndlessService : Service(), LocationListener {
     override fun onCreate() {
         super.onCreate()
         Timber.i("The service has been created".toUpperCase(Locale.getDefault()))
-        initBackgroundWork()
+        initBackGroundWork()
         val notification = createNotification()
         startForeground(1, notification)
     }
 
     override fun onDestroy() {
         super.onDestroy()
+        endBackGroundWork()
         Timber.i("The service has been destroyed".toUpperCase(Locale.getDefault()))
         showToast( "Service destroyed")
     }
@@ -173,7 +186,7 @@ class EndlessService : Service(), LocationListener {
         GlobalScope.launch(Dispatchers.IO) {
             while (isServiceStarted) {
                 launch(Dispatchers.IO) {
-                    backgroundWork()
+                    backGroundWork()
                 }
                 delay(Const.Misc.backgroundTaskPeriod)
             }

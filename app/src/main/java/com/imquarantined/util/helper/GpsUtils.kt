@@ -14,7 +14,14 @@ import com.imquarantined.data.Const
 
 class GPSUtil  {
 
-    fun findLocation(context: Context, locationListener: LocationListener) {
+    fun unregisterLocationListener(context: Context, locationListener: LocationListener){
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager.removeUpdates(locationListener)
+
+    }
+
+
+    fun registerLocationListener(context: Context, locationListener: LocationListener) {
         if (ActivityCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION

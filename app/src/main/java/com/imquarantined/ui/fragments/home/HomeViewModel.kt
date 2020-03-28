@@ -11,10 +11,7 @@ import com.imquarantined.util.helper.Toaster.showToast
 
 class HomeViewModel : BaseViewModel() {
 
-    var isCalibrationDone = false
-    var mLocationData : LocationData? = null
     val mLoginLiveData = MutableLiveData<Boolean>()
-    var atmosphericPressure  = SensorManager.PRESSURE_STANDARD_ATMOSPHERE
 
     fun login(idToken: String) {
         PrefUtil.set(Const.PrefProp.LOGIN_TOKEN, idToken)
