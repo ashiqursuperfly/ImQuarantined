@@ -1,17 +1,15 @@
 package com.imquarantined.util.helper
 
-import android.app.Activity
 import android.content.Context
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import com.imquarantined.util.helper.Toaster.showToast
 import timber.log.Timber
 
 /* Created by ashiq.buet16 **/
 
 object SensorUtil {
-    fun setSensor(TYPE: Int, sensorEventListener: SensorEventListener?, activity: Activity): Boolean {
-        val sensorManager = activity.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+    fun setSensor(TYPE: Int, sensorEventListener: SensorEventListener?, context: Context): Boolean {
+        val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val sensor = sensorManager.getDefaultSensor(TYPE)
         if (sensor == null) {
             Timber.i("Device doesn't support barometer. Using Standard Pressure")

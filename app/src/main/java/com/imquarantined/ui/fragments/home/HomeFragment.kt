@@ -4,14 +4,8 @@ import android.Manifest
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
-import android.hardware.Sensor
-import android.hardware.SensorEvent
-import android.hardware.SensorEventListener
-import android.hardware.SensorManager
-import android.location.Location
-import android.location.LocationListener
 import android.net.Uri
-import android.os.Bundle
+import android.os.Build
 import android.provider.Settings
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.viewModels
@@ -20,16 +14,22 @@ import com.firebase.ui.auth.IdpResponse
 import com.imquarantined.BuildConfig
 import com.imquarantined.R
 import com.imquarantined.data.Const
-import com.imquarantined.data.LocationData
 import com.imquarantined.ui.base.BaseFragment
+import com.imquarantined.ui.service.Actions
+import com.imquarantined.ui.service.EndlessService
+import com.imquarantined.ui.service.ServiceState
+import com.imquarantined.ui.service.getServiceState
 import com.imquarantined.util.helper.*
 import com.imquarantined.util.helper.Toaster.showLongToast
 import com.imquarantined.util.helper.Toaster.showToast
-import kotlinx.android.synthetic.main.fragment_home.*
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import timber.log.Timber
-import java.util.*
 
-class HomeFragment : BaseFragment(),LocationListener {
+class HomeFragment : BaseFragment(){
 
     private val mHomeViewModel: HomeViewModel by viewModels()
     private var gpsUtil = GPSUtil()
@@ -40,6 +40,17 @@ class HomeFragment : BaseFragment(),LocationListener {
 
     override fun afterOnViewCreated() {
         observeData()
+
+        if(!gpsUtil.isGpsEnabled(requireContext()))actionOnService(Actions.STOP)
+        val thread = Thread(object: Runnable{
+            override fun run() {
+                while (!gpsUtil.isGpsEnabled(requireContext()));
+                actionOnService(Actions.START)
+            }
+
+        })
+        thread.start()
+
     }
 
     private fun observeData() {
@@ -47,36 +58,52 @@ class HomeFragment : BaseFragment(),LocationListener {
             if (it) {
                 showToast("Welcome\n ${PrefUtil.get(Const.PrefProp.LOGIN_TOKEN, "-1")}")
                 DialogUtil.hideLoader()
-                setupLocationTracking()
+                initLocationTracking()
             }
         })
 
     }
 
-    private fun checkAuthentication() {
+    private fun checkAuthenticationAndStartLocationTracking() {
 
         if (!mHomeViewModel.isUserLoggedIn())
             startActivityForResult(FirebaseAuthUtil.getIntent(), Const.RequestCode.FIREBASE_AUTH)
         else {
             // showToast("Already Logged In.")
-            setupLocationTracking()
+            initLocationTracking()
         }
     }
 
-    private fun setupLocationTracking() {
-        PermissionsUtil.requestPermission(requireContext(),requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION, getString(R.string.denied_location_permission))
+    private fun initLocationTracking() {
 
         if(PermissionsUtil.isPermissionAllowed(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)){
-            if(enableGPS()){
-                gpsUtil.findLocation(requireActivity(),this)
-            }
-        } else {
-            showLongToast(getString(R.string.denied_location_permission))
-            startActivity(
-                Intent(
-                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                    Uri.parse("package:" + BuildConfig.APPLICATION_ID)
-                )
+            enableGPS()
+        }
+        else {
+            PermissionsUtil.requestPermission(
+                requireContext(),
+                requireActivity(),
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                object : PermissionListener {
+                    override fun onPermissionGranted(response: PermissionGrantedResponse) {
+                        showToast("Permission Granted")
+                        enableGPS()
+                    }
+
+                    override fun onPermissionDenied(response: PermissionDeniedResponse) {
+                        showLongToast(getString(R.string.select_permissions_and_allow))
+                        startActivity(
+                            Intent(
+                                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+                            )
+                        )
+                    }
+
+                    override fun onPermissionRationaleShouldBeShown(permission: PermissionRequest?, token: PermissionToken?) {
+
+                    }
+                }
             )
         }
 
@@ -99,7 +126,7 @@ class HomeFragment : BaseFragment(),LocationListener {
                             override fun onClick(dialog: DialogInterface?, which: Int) {
                                 dialog?.dismiss()
                                 showToast(getString(R.string.enable_gps_to_proceed))
-                                activity?.finish()
+                                enableGPS()
                             }
                         }
                     )
@@ -112,39 +139,23 @@ class HomeFragment : BaseFragment(),LocationListener {
         return true
     }
 
-    private fun setupBarometer(){
-        val isSensorSet = SensorUtil.setSensor(Sensor.TYPE_PRESSURE, object : SensorEventListener {
-            override fun onSensorChanged(sensorEvent: SensorEvent) {
-                val sensorData = sensorEvent.values
-                mHomeViewModel.atmosphericPressure = sensorData[0]
+    private fun actionOnService(action: Actions) {
+        if (getServiceState(requireContext()) == ServiceState.STOPPED && action == Actions.STOP) return
+        Intent(activity, EndlessService::class.java).also {
+            it.action = action.name
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Timber.i("Starting the service in >=26 Mode")
+                activity?.startForegroundService(it)
+                return
             }
-            override fun onAccuracyChanged(sensor: Sensor, i: Int) {}
-        }, requireActivity())
-
-        if (!isSensorSet) {
-            Timber.i("Device doesn't support barometer. Using Standard Pressure")
+            Timber.i("Starting the service in < 26 Mode")
+            activity?.startService(it)
         }
     }
 
     override fun onResume() {
         super.onResume()
-        checkAuthentication()
-        setupBarometer()
-        calibrateSensors()
-    }
-
-    private fun calibrateSensors() {
-        val task = CustomTimerTask()
-        task.setCallback(object: CustomTimerTask.TimerCallback {
-            override fun onTime() {
-                activity?.runOnUiThread {  mHomeViewModel.isCalibrationDone = true }
-            }
-        })
-
-        val n = Const.Misc.LocationRequestPeriodMillis*Const.Misc.CalibrationPoints
-        val timer = Timer()
-        mHomeViewModel.isCalibrationDone = false
-        timer.schedule(task, n)
+        checkAuthenticationAndStartLocationTracking()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -178,31 +189,6 @@ class HomeFragment : BaseFragment(),LocationListener {
                 activity?.finish()
             }
         }
-    }
-
-    override fun onLocationChanged(location: Location?) {
-        if (location != null) {
-            val alt =SensorManager.getAltitude(
-                SensorUtil.getSealevelPressure(
-                    location.altitude.toFloat(),
-                    mHomeViewModel.atmosphericPressure
-                ),
-                mHomeViewModel.atmosphericPressure
-            )
-
-            mHomeViewModel.mLocationData = LocationData(location.latitude, location.longitude, alt.toDouble())
-        }
-    }
-
-    override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-    }
-
-    override fun onProviderEnabled(provider: String?) {
-
-    }
-
-    override fun onProviderDisabled(provider: String?) {
-
     }
 
 

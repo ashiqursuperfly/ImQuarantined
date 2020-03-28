@@ -1,14 +1,9 @@
 package com.imquarantined.util.helper
 
-import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import com.karumi.dexter.Dexter
-import com.karumi.dexter.PermissionToken
-import com.karumi.dexter.listener.PermissionDeniedResponse
-import com.karumi.dexter.listener.PermissionGrantedResponse
-import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import timber.log.Timber
 
@@ -16,27 +11,16 @@ import timber.log.Timber
 
 object PermissionsUtil {
 
-    fun requestPermission(context: Context, activity: Activity, permission: String, errorMsgIfDenied:String = "Permission Denied") {
+    fun requestPermission(
+        context: Context,
+        activity: Activity,
+        permission: String,
+        listener: PermissionListener) {
 
         if (!isPermissionAllowed(context,permission)) {
             Dexter.withActivity(activity)
                 .withPermission(permission)
-                .withListener(object : PermissionListener {
-                    override fun onPermissionGranted(response: PermissionGrantedResponse) {
-                        Toaster.showToast("Permission Granted")
-                    }
-
-                    override fun onPermissionDenied(response: PermissionDeniedResponse) {
-                        Toaster.showLongToast(errorMsgIfDenied)
-                    }
-
-                    override fun onPermissionRationaleShouldBeShown(
-                        permission: PermissionRequest?,
-                        token: PermissionToken?
-                    ) {
-
-                    }
-                }).check()
+                .withListener(listener).check()
         }
     }
 

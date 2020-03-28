@@ -15,16 +15,16 @@ import com.imquarantined.data.Const
 
 class GPSUtil  {
 
-    fun findLocation(activity: Activity, locationListener: LocationListener) {
+    fun findLocation(context: Context, locationListener: LocationListener) {
         if (ActivityCompat.checkSelfPermission(
-                activity,
+                context,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(
-                activity,
+                context,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            val locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
             val criteria = Criteria()
             criteria.accuracy = Criteria.ACCURACY_FINE
@@ -37,8 +37,8 @@ class GPSUtil  {
 
     }
 
-    fun isGpsEnabled(activity: Activity) : Boolean{
-        val locationManager = activity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    fun isGpsEnabled(context: Context) : Boolean{
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
     }
 
