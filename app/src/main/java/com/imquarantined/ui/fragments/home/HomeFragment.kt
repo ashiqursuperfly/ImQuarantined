@@ -8,6 +8,7 @@ import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -21,6 +22,7 @@ import com.firebase.ui.auth.IdpResponse
 import com.imquarantined.BuildConfig
 import com.imquarantined.R
 import com.imquarantined.data.Const
+import com.imquarantined.data.LocationData
 import com.imquarantined.ui.base.BaseFragment
 import com.imquarantined.util.helper.*
 import com.imquarantined.util.helper.Toaster.showLongToast
@@ -40,7 +42,6 @@ class HomeFragment : BaseFragment(),LocationListener {
 
     override fun afterOnViewCreated() {
         observeData()
-        setupBarometer()
     }
 
     private fun observeData() {
@@ -119,21 +120,20 @@ class HomeFragment : BaseFragment(),LocationListener {
                 tv_sensor_data.text = Arrays.toString(sensorEvent.values)
             }
             override fun onAccuracyChanged(sensor: Sensor, i: Int) {
+                showToast("Barometer Accuracy Changed")
 
             }
         }, requireActivity())
 
         if (!isSensorSet) {
-            showToast("Device doesnt support barometer")
+            showToast("Device doesn't support barometer")
         }
     }
 
     override fun onResume() {
         super.onResume()
-
         checkAuthentication()
-
-
+        setupBarometer()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -171,7 +171,10 @@ class HomeFragment : BaseFragment(),LocationListener {
 
     override fun onLocationChanged(location: Location?) {
         if (location != null) {
-            mHomeViewModel.mLocationData = Pair(location.latitude, location.longitude)
+            val alt =SensorManager.getAltitude(SensorUtil.getSealevelPressure(location.altitude.toFloat(), SensorManager.PRESSURE_STANDARD_ATMOSPHERE), SensorManager.PRESSURE_STANDARD_ATMOSPHERE)
+
+            mHomeViewModel.mLocationData = LocationData(location.latitude, location.longitude, alt.toDouble())
+            tv_sensor_data.text = mHomeViewModel.mLocationData.toString()
         }
     }
 

@@ -2,6 +2,7 @@ package com.imquarantined.ui.fragments.home
 
 import androidx.lifecycle.MutableLiveData
 import com.imquarantined.data.Const
+import com.imquarantined.data.LocationData
 import com.imquarantined.ui.base.BaseViewModel
 import com.imquarantined.util.helper.FirebaseAuthUtil
 import com.imquarantined.util.helper.PrefUtil
@@ -9,7 +10,7 @@ import com.imquarantined.util.helper.Toaster.showToast
 
 class HomeViewModel : BaseViewModel() {
 
-    var mLocationData = Pair(0.0,0.0)
+    var mLocationData : LocationData? = null
     val mLoginLiveData = MutableLiveData<Boolean>()
 
     fun login(idToken: String) {
