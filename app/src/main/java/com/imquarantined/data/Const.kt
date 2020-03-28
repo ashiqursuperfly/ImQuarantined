@@ -1,12 +1,20 @@
 package com.imquarantined.data
 
+import com.imquarantined.BuildConfig
+
 class Const {
 
-    object Misc {
-
+    object Config {
         const val calibrationPoints = 10
         const val locationRequestPeriodMillis = 10000L // TODO: before deploying it should be bgTaskPeriod/3
         const val backgroundTaskPeriod =  3 * locationRequestPeriodMillis
+    }
+
+    object Notification {
+        const val bgServiceChannelName = "bg_service_notification_channel_name${BuildConfig.APPLICATION_ID}"
+        const val bgServiceChannelId = "bg_service_notification_channel_id${BuildConfig.APPLICATION_ID}"
+        const val promptGpsOffWhileBgTaskChannelId = "prompt_gps_off_while_bg_task_id${BuildConfig.APPLICATION_ID}"
+        const val promptGpsOffWhileBgTaskChannelName = "prompt_gps_off_while_bg_task_name${BuildConfig.APPLICATION_ID}"
     }
 
     object RequestResult {

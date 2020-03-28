@@ -17,9 +17,7 @@ class GPSUtil  {
     fun unregisterLocationListener(context: Context, locationListener: LocationListener){
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         locationManager.removeUpdates(locationListener)
-
     }
-
 
     fun registerLocationListener(context: Context, locationListener: LocationListener) {
         if (ActivityCompat.checkSelfPermission(
@@ -37,8 +35,10 @@ class GPSUtil  {
             criteria.powerRequirement = Criteria.POWER_HIGH
             val locationProvider = locationManager.getBestProvider(criteria, true)
 
-            locationManager.requestLocationUpdates(locationProvider!!, Const.Misc.locationRequestPeriodMillis, 0.0f, locationListener)
+            locationManager.requestLocationUpdates(locationProvider!!, Const.Config.locationRequestPeriodMillis, 0.0f, locationListener)
 
+        }else {
+            Toaster.showToast("Error: Registering GPS Listener. Permission Not Allowed")
         }
 
     }

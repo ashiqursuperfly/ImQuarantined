@@ -16,10 +16,12 @@ import android.os.IBinder
 import android.os.PowerManager
 import com.imquarantined.R
 import com.imquarantined.data.Const
-import com.imquarantined.data.LocationData
+import com.imquarantined.data.LocationEntity
+import com.imquarantined.db.AppDb
 import com.imquarantined.ui.MainActivity
 import com.imquarantined.util.helper.CustomTimerTask
 import com.imquarantined.util.helper.GPSUtil
+import com.imquarantined.util.helper.LocalNotificationUtil
 import com.imquarantined.util.helper.SensorUtil
 import com.imquarantined.util.helper.Toaster.showToast
 import kotlinx.coroutines.Dispatchers
@@ -31,25 +33,55 @@ import java.util.*
 
 class EndlessService : Service(), CustomServiceTask {
 
+    private val mLocationsDao = AppDb.getInstance().locationsDao()
+
     private lateinit var mPressureSensorListener: SensorEventListener
     private lateinit var mLocationListener: LocationListener
+    private lateinit var mLocationData : LocationEntity
 
     private var gpsUtil = GPSUtil()
-    var mLocationData : LocationData? = null
     var atmosphericPressure  = SensorManager.PRESSURE_STANDARD_ATMOSPHERE
     var isCalibrationDone = false
 
-    var i=0
+    var i=0L
     override fun backGroundWork() {
-        //TODO:
-        // 0. Check if gps still enabled, if not then record timestamp on sharedPref.
-        // Also create a notification, saying please enable location otherwise your streak will be broken. if
-        // 1. See if having wifi network
-        // 2. If yes push to server
-        // 3. Else push to local database
-        // 4.
-        Timber.d("**BGWORK** Location $i: $mLocationData")
+        if(gpsUtil.isGpsEnabled(this)){
+            if(::mLocationData.isInitialized) {
+                mLocationsDao.insert(mLocationData)
+                Timber.d("**BGWORK** Location $i: $mLocationData")
+                //TODO:
+                // 1. If possible push to server
+                // 2. else push to local database
+                val locations = mLocationsDao.getLocationsData()
+                for (item in locations){
+                    Timber.d("**DB**: $item")
+                }
 
+            }
+
+        }
+        else {
+            LocalNotificationUtil.showNotification(
+                this,
+                getString(R.string.title_notification_gps_off),
+                getString(R.string.body_notification_gps_off),
+                Intent(this, MainActivity::class.java),
+                Const.Notification.promptGpsOffWhileBgTaskChannelId,
+                Const.Notification.promptGpsOffWhileBgTaskChannelName
+            )
+        }
+
+    }
+
+    override fun initBackGroundWork() {
+        setupBarometer()
+        calibrateSensors()
+        setupLocationTracking()
+    }
+
+    override fun endBackGroundWork() {
+        gpsUtil.unregisterLocationListener(this, mLocationListener)
+        SensorUtil.unregisterListener(this, mPressureSensorListener)
     }
 
     private fun setupLocationTracking() {
@@ -61,7 +93,7 @@ class EndlessService : Service(), CustomServiceTask {
                         atmosphericPressure
                     )
 
-                    mLocationData = LocationData(location.latitude, location.longitude, alt.toDouble())
+                    mLocationData = LocationEntity(latitude = location.latitude, longitude = location.longitude, altitude = alt.toDouble(), dateTime = Date(System.currentTimeMillis()))
                 }
             }
 
@@ -76,19 +108,16 @@ class EndlessService : Service(), CustomServiceTask {
         if(gpsUtil.isGpsEnabled(this)){
             gpsUtil.registerLocationListener(this,mLocationListener)
         }else {
-            //TODO: Record Error on local db or server
+            //This should never be called since, we only start the service when we are sure gps is enabled
+            LocalNotificationUtil.showNotification(
+                this,
+                getString(R.string.title_notification_gps_off),
+                getString(R.string.body_notification_gps_off),
+                Intent(this, MainActivity::class.java),
+                Const.Notification.promptGpsOffWhileBgTaskChannelId,
+                Const.Notification.promptGpsOffWhileBgTaskChannelName
+            )
         }
-    }
-
-    override fun initBackGroundWork() {
-        setupLocationTracking()
-        setupBarometer()
-        calibrateSensors()
-    }
-
-    override fun endBackGroundWork() {
-        gpsUtil.unregisterLocationListener(this, mLocationListener)
-        SensorUtil.unregisterListener(this, mPressureSensorListener)
     }
 
     private fun setupBarometer(){
@@ -116,14 +145,13 @@ class EndlessService : Service(), CustomServiceTask {
             }
         })
 
-        val n = Const.Misc.locationRequestPeriodMillis* Const.Misc.calibrationPoints
+        val n = Const.Config.locationRequestPeriodMillis* Const.Config.calibrationPoints
         val timer = Timer()
         isCalibrationDone = false
         timer.schedule(task, n)
     }
 
-
-    /* The following code should never be changed */
+        /* The following code should NOT be changed */
     private var wakeLock: PowerManager.WakeLock? = null
     private var isServiceStarted = false
 
@@ -188,7 +216,7 @@ class EndlessService : Service(), CustomServiceTask {
                 launch(Dispatchers.IO) {
                     backGroundWork()
                 }
-                delay(Const.Misc.backgroundTaskPeriod)
+                delay(Const.Config.backgroundTaskPeriod)
             }
             Timber.i("End of the loop for the service")
         }
@@ -213,7 +241,7 @@ class EndlessService : Service(), CustomServiceTask {
     }
 
     private fun createNotification(): Notification {
-        val notificationChannelId = "ENDLESS SERVICE CHANNEL"
+        val notificationChannelId = Const.Notification.bgServiceChannelId
 
         // depending on the Android API that we're dealing with we will have
         // to use a specific method to create the notification
@@ -221,10 +249,10 @@ class EndlessService : Service(), CustomServiceTask {
             val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager;
             val channel = NotificationChannel(
                 notificationChannelId,
-                "Endless Service notifications channel",
+                Const.Notification.bgServiceChannelName,
                 NotificationManager.IMPORTANCE_HIGH
             ).let {
-                it.description = "Endless Service channel"
+                it.description = Const.Notification.bgServiceChannelName
                 it.enableLights(true)
                 it.lightColor = Color.RED
                 it.enableVibration(true)
@@ -244,8 +272,8 @@ class EndlessService : Service(), CustomServiceTask {
         ) else Notification.Builder(this)
 
         return builder
-            .setContentTitle("Endless Service")
-            .setContentText("This is your favorite endless service working")
+            .setContentTitle(getString(R.string.title_notification_endless_bg_task))
+            .setContentText(getString(R.string.body_notification_endless_bg_task))
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.mipmap.ic_launcher)
             .setTicker("Ticker text")

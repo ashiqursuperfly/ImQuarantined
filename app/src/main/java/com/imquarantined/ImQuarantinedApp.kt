@@ -3,6 +3,7 @@ package com.imquarantined
 import android.content.Context
 import android.util.Log
 import androidx.multidex.MultiDexApplication
+import com.imquarantined.db.AppDb
 import timber.log.Timber
 
 /* Created by ashiq.buet16 **/
@@ -24,6 +25,7 @@ class ImQuarantinedApp : MultiDexApplication() {
     override fun onCreate() {
         super.onCreate()
 
+        AppDb.initDb(this)
         plantTimber()
     }
 
