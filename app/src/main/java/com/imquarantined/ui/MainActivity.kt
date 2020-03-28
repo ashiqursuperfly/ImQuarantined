@@ -2,17 +2,21 @@ package com.imquarantined.ui
 
 import android.view.View
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.imquarantined.R
 import com.imquarantined.ui.base.BaseActivity
+import com.imquarantined.util.helper.DialogUtil
 import com.imquarantined.util.helper.FirebaseAuthUtil
+import com.imquarantined.util.helper.NetworkUtil
 
 class MainActivity : BaseActivity() {
     
     private lateinit var mNavController: NavController
+    private var mNoNetworkDialog: AlertDialog? = null
     private val mMainViewModel: MainViewModel by viewModels()
 
 
@@ -43,5 +47,20 @@ class MainActivity : BaseActivity() {
     private fun observeData() {
 
     }
+
+    override fun onConnectivityChanged(connected: Boolean) {
+        super.onConnectivityChanged(connected)
+
+        mNoNetworkDialog?.dismiss()
+        if (connected) return
+
+        mNoNetworkDialog = DialogUtil.noNetworkDialog(this,
+            callback = object : DialogUtil.NoNetworkDialogCallback {
+                override fun onClickRefresh() {
+                    NetworkUtil.refresh()
+                }
+            })
+    }
+
 
 }

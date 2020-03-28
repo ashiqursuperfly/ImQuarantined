@@ -6,4 +6,7 @@
     <string name="denied_location_permission">Hey There! Looks like you have denied location permission. We dont do that here :) Not cool :) Please enable your location settings.</string>
     <string name="enable_gps_to_proceed">Please enable GPS. Otherwise, we cant proceed :\"(</string>
     <string name="select_permissions_and_allow">Please select \"Permissions\" and allow the required permissions. :)</string>
+    <string name="txt_connection_not_available">There is a problem with your internet connection! Please try to reconnect.</string>
+    <string name="txt_refresh">Refresh</string>
+    <string name="txt_network_problem">Network Problem</string>
 </resources>
