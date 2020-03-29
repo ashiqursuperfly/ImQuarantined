@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimaryDark">@color/color2F2F2F</color>
-    <color name="colorPrimary">@color/color646464</color>
-    <color name="colorAccent">#EE3D96</color>
+    <color name="colorPrimary">@color/colorPurple</color>
+    <color name="colorAccent">#AF3CAD</color>
 
     <color name="colorDarkOverlay">#CC000000</color>
     <color name="colorDarkOverlay2">#99000000</color>

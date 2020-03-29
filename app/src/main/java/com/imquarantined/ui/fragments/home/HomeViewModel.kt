@@ -24,7 +24,7 @@ class HomeViewModel : BaseViewModel() {
                         PrefUtil.set(Const.PrefProp.LOGIN_TOKEN, idToken)
                         mLoginLiveData.postValue(true)
                         showToast("Welcome: ${it.data.userName}")
-                        Timber.d("Response: ${it}")
+                        Timber.d("AuthResponse: ${it}")
 
                     } else {
                         mLoginLiveData.postValue(false)

@@ -18,4 +18,8 @@
     <string name="title_notification_endless_bg_task">Looking Good 🤩</string>
     <string name="body_notification_endless_bg_task">Stay at home with us and save the world 😌</string>
     <string name="db_name">imquarantined_db</string>
+    <string name="label_total_points">Total Points</string>
+    <string name="label_current_streak">Current Streak</string>
+    <string name="days_quarantined">Days Quarantined</string>
+    <string name="label_highest_streak">Highest Streak</string>
 </resources>
