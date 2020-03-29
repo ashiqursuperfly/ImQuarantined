@@ -30,6 +30,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
+import kotlin.collections.ArrayList
 
 class EndlessService : Service(), CustomServiceTask {
 
@@ -47,15 +48,20 @@ class EndlessService : Service(), CustomServiceTask {
     override fun backGroundWork() {
         if(gpsUtil.isGpsEnabled(this)){
             if(::mLocationData.isInitialized) {
-                mLocationsDao.insert(mLocationData)
-                Timber.d("**BGWORK** Location $i: $mLocationData")
-                //TODO:
-                // 1. If possible push to server
-                // 2. else push to local database
-                val locations = mLocationsDao.getLocationsData()
+
+                val locations = ArrayList(mLocationsDao.getLocationsData())
+
                 for (item in locations){
-                    Timber.d("**DB**: $item")
+                    Timber.d("**DB**: $item") //TODO: remove this
                 }
+                locations.add(mLocationData)
+                //TODO: send locations to server,
+                // if successful, deleteAll() from DB
+                // If not successful, add mLocationData to DB
+                mLocationsDao.insert(mLocationData)
+
+                Timber.d("**BGWORK** Location $i: $mLocationData")
+
 
             }
 
