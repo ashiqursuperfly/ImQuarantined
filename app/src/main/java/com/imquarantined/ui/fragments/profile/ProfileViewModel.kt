@@ -14,7 +14,7 @@ class ProfileViewModel : BaseViewModel() {
 
     val mProfileResponseLiveData = MutableLiveData<ProfileResponse>()
 
-    fun getProfile(){
+    fun loadProfile(){
         mDisposable.add(
             mCommonApiService.getProfile()
                 .subscribeOn(Schedulers.io())

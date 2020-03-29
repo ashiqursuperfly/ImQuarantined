@@ -21,6 +21,8 @@ class ProfileFragment : BaseFragment() {
     override fun afterOnViewCreated() {
 
         observeData()
+        DialogUtil.showLoader(requireContext())
+        mProfileViewModel.loadProfile()
     }
 
     private fun observeData(){
@@ -33,14 +35,13 @@ class ProfileFragment : BaseFragment() {
             }
 
             //TODO:populate views with data
-            img_user_photo.load("https://graph.facebook.com/10216598066973550/picture")
-            tv_days_quarantined.text = "321"
-            tv_total_pts.text = "31231"
-            tv_user_name.text="Ashiqur Rahman"
-            tv_current_streak.text="3"
-            tv_highest_streak.text="5"
-            tv_user_email.text="ashiqur.buet16@gmail.com"
-
+            img_user_photo.load(it.data.imageUrl.trim())
+            tv_days_quarantined.text = it.data.daysQuarantined.toString()
+            tv_total_pts.text = it.data.points.toString()
+            tv_user_name.text= it.data.userName
+            tv_current_streak.text= it.data.currentStreak.toString()
+            tv_highest_streak.text= it.data.highestStreak.toString()
+            tv_user_email.text=""
 
 
         })

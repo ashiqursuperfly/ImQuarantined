@@ -59,7 +59,12 @@ class Const {
             const val SUCCESS = "success"
             const val MESSAGE = "message"
             const val DATA = "data"
-            const val USER_NAME = "name"
+            const val USER_NAME = "user_name"
+            const val PHOTO_URL = "photo_url"
+            const val TOTAL_POINTS = "total_points"
+            const val CUR_STREAK = "cur_streak"
+            const val DAYS_QUARANTINED = "days_quarantined"
+            const val HIGHEST_STREAK = "highest_streak"
             const val FAILED_AT = "failed_at"
         }
 
