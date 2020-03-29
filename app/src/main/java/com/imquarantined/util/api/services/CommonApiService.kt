@@ -1,10 +1,7 @@
 package com.imquarantined.util.api.services
 
 import com.imquarantined.data.Const
-import com.imquarantined.data.api_response.AuthResponse
-import com.imquarantined.data.api_response.LeaderboardResponse
-import com.imquarantined.data.api_response.ProfileResponse
-import com.imquarantined.data.api_response.UpdateLocationsResponse
+import com.imquarantined.data.api_response.*
 import io.reactivex.Flowable
 import org.json.JSONArray
 import retrofit2.http.Field
@@ -36,6 +33,8 @@ interface CommonApiService {
     @GET(Const.Api.ENDPOINTS.GET_LEADERBOARD)
     fun getLeaderBoard(): Flowable<LeaderboardResponse>
 
+    @GET(Const.Api.ENDPOINTS.GET_HOME)
+    fun getHomeContents(): Flowable<HomeResponse>
 
     /*
 

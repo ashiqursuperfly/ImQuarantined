@@ -30,11 +30,10 @@ class ProfileFragment : BaseFragment() {
             DialogUtil.hideLoader()
 
             if(it == null || !it.isSuccess){
-                showToast("Error loading Profile: ${it.message}")
+                showToast("Error loading Profile: ${it?.message?:""}")
                 return@Observer
             }
 
-            //TODO:populate views with data
             img_user_photo.load(it.data.imageUrl.trim())
             tv_days_quarantined.text = it.data.daysQuarantined.toString()
             tv_total_pts.text = it.data.points.toString()
@@ -42,8 +41,6 @@ class ProfileFragment : BaseFragment() {
             tv_current_streak.text= it.data.currentStreak.toString()
             tv_highest_streak.text= it.data.highestStreak.toString()
             tv_user_email.text=""
-
-
         })
     }
 }

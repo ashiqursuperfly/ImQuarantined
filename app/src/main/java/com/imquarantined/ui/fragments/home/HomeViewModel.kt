@@ -2,6 +2,7 @@ package com.imquarantined.ui.fragments.home
 
 import androidx.lifecycle.MutableLiveData
 import com.imquarantined.data.Const
+import com.imquarantined.data.api_response.HomeResponse
 import com.imquarantined.ui.base.BaseViewModel
 import com.imquarantined.util.helper.FirebaseAuthUtil
 import com.imquarantined.util.helper.PrefUtil
@@ -13,6 +14,7 @@ import timber.log.Timber
 class HomeViewModel : BaseViewModel() {
 
     val mLoginLiveData = MutableLiveData<Boolean>()
+    val mHomeContentsLiveData = MutableLiveData<HomeResponse>()
 
     fun login(idToken: String) {
         mDisposable.add(
@@ -37,6 +39,24 @@ class HomeViewModel : BaseViewModel() {
                 )
         )
     }
+
+    fun loadHomeContents(){
+        mDisposable.add(
+            mCommonApiService.getHomeContents()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    mHomeContentsLiveData.postValue(it)
+                    Timber.d("HomeResponse: $it")
+                }, {
+                    mHomeContentsLiveData.postValue(null)
+                    showToast("Error loading Homecontents: ${it.message}")
+                }
+                )
+        )
+
+    }
+
 
     fun signOut() {
         PrefUtil.set(Const.PrefProp.LOGIN_TOKEN, Const.PrefProp.ACTION_DELETE)

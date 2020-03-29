@@ -1,34 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-xmlns:app="http://schemas.android.com/apk/res-auto"
-xmlns:tools="http://schemas.android.com/tools">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.fragments.home.HomeFragment"
-    android:orientation="vertical">
+    android:orientation="horizontal"
+    android:background="@color/colorPrimaryDark">
 
-    <TextView
-        android:id="@+id/tv_location_now"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Home"/>
-    <TextView android:id="@+id/tv_location_prev"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-    <TextView
-        android:id="@+id/tv_sensor_data"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+    <ProgressBar
+        android:id="@+id/pb_progress"
+        style="?android:progressBarStyleHorizontal"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="@dimen/dp40"
+        android:indeterminateDrawable="@drawable/circular_pb"
+        android:progress="80"
+        android:progressDrawable="@drawable/circular_pb"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         />
 
-    <Button
-        android:id="@+id/btn_dummy"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/tv_progress"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button" />
-
-</LinearLayout>
+        android:text="hh mm ss"
+        android:textSize="@dimen/sp20"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/pb_progress"
+        app:layout_constraintBottom_toBottomOf="@id/pb_progress"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

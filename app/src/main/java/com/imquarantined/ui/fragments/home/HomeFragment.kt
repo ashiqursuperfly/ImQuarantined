@@ -43,14 +43,14 @@ class HomeFragment : BaseFragment(){
     override fun afterOnViewCreated() {
         observeData()
 
-        //TODO: remove this
-        setClickListener(btn_dummy)
-
         if(!shouldStartService())actionOnService(Actions.STOP)
 
 
         if (!mHomeViewModel.isUserLoggedIn()) startActivityForResult(FirebaseAuthUtil.getIntent(), Const.RequestCode.FIREBASE_AUTH)
-        else initLocationTracking()
+        else {
+            mHomeViewModel.loadHomeContents()
+            initLocationTracking()
+        }
 
         val thread = Thread(object: Runnable{
             override fun run() {
@@ -67,21 +67,33 @@ class HomeFragment : BaseFragment(){
     }
 
     override fun onClick(v: View?) {
-        //TODO: remove this
-        mHomeViewModel.signOut()
     }
 
     private fun observeData() {
         mHomeViewModel.mLoginLiveData.observe(this, Observer {
             if (it) {
                 Timber.i("Saving token to sharedPref ${PrefUtil.get(Const.PrefProp.LOGIN_TOKEN, "-1")}")
-                DialogUtil.hideLoader()
+                mHomeViewModel.loadHomeContents()
                 initLocationTracking()
             }
             else {
                 DialogUtil.hideLoader()
                 activity?.finish()
             }
+        })
+
+        mHomeViewModel.mHomeContentsLiveData.observe(this, Observer {
+            DialogUtil.hideLoader()
+
+            if(it == null || !it.isSuccess){
+                showToast("Error loading HomeContents: ${it?.message?:""}")
+                return@Observer
+            }
+
+            pb_progress.progress = if (it.data.progress < 20) 20 else it.data.progress
+            val progressText = "${it.data.hr}hr ${it.data.min}min ${it.data.sec}sec"
+            tv_progress.text = progressText
+
         })
     }
 

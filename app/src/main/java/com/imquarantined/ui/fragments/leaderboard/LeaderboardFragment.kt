@@ -37,7 +37,7 @@ class LeaderboardFragment : BaseFragment() {
             DialogUtil.hideLoader()
 
             if(it == null || !it.isSuccess){
-                Toaster.showToast("Error loading Leaderboard: ${it.message}")
+                Toaster.showToast("Error loading Leaderboard: ${it?.message?:""}")
                 return@Observer
             }
 

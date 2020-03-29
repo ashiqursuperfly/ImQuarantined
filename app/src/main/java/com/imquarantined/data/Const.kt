@@ -34,6 +34,7 @@ class Const {
             const val UPDATE_LOCATION = BASE_URL+"location/update"
             const val GET_PROFILE =  BASE_URL + "profile"
             const val GET_LEADERBOARD = BASE_URL + "leaderboard"
+            const val GET_HOME = BASE_URL
         }
 
         object Params {
@@ -69,6 +70,10 @@ class Const {
             const val POSITION = "position"
             const val IS_USER = "is_user"
             const val TOP_USERS = "top"
+            const val PROGRESS = "progress"
+            const val HOUR = "hr"
+            const val MINUTE = "min"
+            const val SECOND = "sec"
             const val FAILED_AT = "failed_at"
         }
 
