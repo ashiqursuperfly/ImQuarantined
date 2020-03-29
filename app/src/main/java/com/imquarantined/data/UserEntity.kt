@@ -5,7 +5,10 @@ import com.google.gson.annotations.SerializedName
 /* Created by ashiq.buet16 **/
 
 data class UserEntity (
+    @SerializedName(Const.Api.Response.POSITION)
     var position: Int = -1,
+    @SerializedName(Const.Api.Response.IS_USER)
+    var isUser: Boolean = false,
     @SerializedName(Const.Api.Response.USER_NAME)
     var userName: String,
     @SerializedName(Const.Api.Response.PHOTO_URL)

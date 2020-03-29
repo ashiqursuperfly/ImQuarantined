@@ -20,10 +20,7 @@ import com.imquarantined.ui.service.Actions
 import com.imquarantined.ui.service.EndlessService
 import com.imquarantined.ui.service.ServiceState
 import com.imquarantined.ui.service.getServiceState
-import com.imquarantined.util.helper.DialogUtil
-import com.imquarantined.util.helper.FirebaseAuthUtil
-import com.imquarantined.util.helper.GPSUtil
-import com.imquarantined.util.helper.PermissionsUtil
+import com.imquarantined.util.helper.*
 import com.imquarantined.util.helper.Toaster.showLongToast
 import com.imquarantined.util.helper.Toaster.showToast
 import com.karumi.dexter.PermissionToken
@@ -77,7 +74,7 @@ class HomeFragment : BaseFragment(){
     private fun observeData() {
         mHomeViewModel.mLoginLiveData.observe(this, Observer {
             if (it) {
-                // showToast("Saving token to sharedPref ${PrefUtil.get(Const.PrefProp.LOGIN_TOKEN, "-1")}")
+                Timber.i("Saving token to sharedPref ${PrefUtil.get(Const.PrefProp.LOGIN_TOKEN, "-1")}")
                 DialogUtil.hideLoader()
                 initLocationTracking()
             }
@@ -175,6 +172,10 @@ class HomeFragment : BaseFragment(){
             Timber.i("Starting the service in < 26 Mode")
             activity?.startService(it)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

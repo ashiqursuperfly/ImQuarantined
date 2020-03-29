@@ -30,7 +30,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/default_space"
-                android:background="@color/colorE6E7E8"
+                android:background="@color/colorPrimaryDark"
                 app:layout_constraintBottom_toTopOf="@+id/bottom_navigation"/>
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
@@ -41,6 +41,7 @@
                 app:labelVisibilityMode="labeled"
                 app:itemIconTint="@drawable/bottom_navigation_colors"
                 app:itemTextColor="@drawable/bottom_navigation_colors"
+                android:background="@color/colorPrimaryDark"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
 

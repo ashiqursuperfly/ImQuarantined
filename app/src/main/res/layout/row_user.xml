@@ -7,6 +7,7 @@
         android:layout_height="85dp"
         app:cardCornerRadius="@dimen/dp15"
         app:cardElevation="@dimen/dp8"
+        android:layout_marginBottom="@dimen/dp5"
         android:background="@color/colorPrimaryDark">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,6 +22,7 @@
             <TextView
                 android:id="@+id/tv_position"
                 android:layout_width="wrap_content"
+                android:padding="@dimen/dp8"
                 android:layout_height="wrap_content"
                 android:letterSpacing="0.02"
                 android:textColor="@color/color2F2F2F"
@@ -33,10 +35,10 @@
                 tools:text="1." />
 
 
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/img_user"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:scaleType="centerCrop"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="w, 1:1"
@@ -49,7 +51,9 @@
                 android:id="@+id/tv_user_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:padding="@dimen/dp2"
                 android:layout_marginTop="8dp"
+                android:layout_marginStart="@dimen/dp8"
                 android:letterSpacing="0.02"
                 android:textColor="@color/color2F2F2F"
                 android:textSize="24sp"
@@ -59,10 +63,11 @@
                 tools:text="Tahmeed Tareq" />
 
             <TextView
-                android:id="@+id/tv_donation"
+                android:id="@+id/tv_days_quarantined"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
+                android:layout_marginStart="@dimen/dp8"
 
                 android:ellipsize="marquee"
                 android:letterSpacing="0.02"
@@ -72,24 +77,40 @@
                 app:layout_constraintStart_toEndOf="@id/img_user"
                 app:layout_constraintTop_toTopOf="@id/tv_user_name"
                 app:layout_constraintBottom_toBottomOf="parent"
-                tools:text="Donated $231" />
+                tools:text="Days Quarantined: 34" />
 
             <TextView
                 android:id="@+id/tv_score"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:padding="@dimen/dp2"
                 android:ellipsize="marquee"
-
                 android:letterSpacing="0.02"
                 android:maxLines="2"
                 android:textColor="@color/color2F2F2F"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/tv_user_name"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_user_name"
                 tools:text="32131" />
+
+
+
+            <TextView
+                android:id="@+id/tv_label_points"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:letterSpacing="0.02"
+                android:maxLines="1"
+                android:text="Points"
+                android:textColor="@color/color2F2F2F"
+                android:textSize="@dimen/sp18"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/tv_user_name"
+                app:layout_constraintTop_toBottomOf="@id/tv_score"
+
+                />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

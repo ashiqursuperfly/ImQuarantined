@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import timber.log.Timber
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -175,7 +176,9 @@ class EndlessService : Service(), CustomServiceTask {
             ja.put(i,jo.put(Const.Api.Params.POST.LAT, items[i].latitude))
             ja.put(i,jo.put(Const.Api.Params.POST.LONG, items[i].longitude))
             ja.put(i,jo.put(Const.Api.Params.POST.ALTI, items[i].altitude))
-            ja.put(i,jo.put(Const.Api.Params.POST.DATE_TIME, items[i].dateTime))
+            var simpleDateFormat = SimpleDateFormat("dd/mm/yyyy hh:mm:ss", Locale.US)
+
+            ja.put(i,jo.put(Const.Api.Params.POST.DATE_TIME, simpleDateFormat.format(items[i].dateTime)))
         }
 
         Timber.d("Updating Locations:\n $ja")

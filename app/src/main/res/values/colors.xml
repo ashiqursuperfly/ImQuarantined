@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimaryDark">@color/color2F2F2F</color>
-    <color name="colorPrimary">@color/colorPurple</color>
-    <color name="colorAccent">#AF3CAD</color>
+    <color name="colorPrimary">#34e8eb</color>
+    <color name="colorAccent">#34e8eb</color>
 
     <color name="colorDarkOverlay">#CC000000</color>
     <color name="colorDarkOverlay2">#99000000</color>
@@ -21,9 +21,10 @@
     <color name="colorD6D7E9">#d6d7e9</color>
 
 
+    <color name="colorWhite">#FFFFFF</color>
     <color name="colorYellow">#FFFF00</color>
     <color name="colorRed">#FF0000</color>
-    <color name="colorGreen">#008000</color>
+    <color name="colorGreen">#1ed931</color>
     <color name="colorBlue">#0000FF</color>
 
     <color name="colorFbBlue">#3b5998</color>

@@ -33,6 +33,7 @@ class Const {
             const val AUTH = BASE_URL+"auth"
             const val UPDATE_LOCATION = BASE_URL+"location/update"
             const val GET_PROFILE =  BASE_URL + "profile"
+            const val GET_LEADERBOARD = BASE_URL + "leaderboard"
         }
 
         object Params {
@@ -65,6 +66,9 @@ class Const {
             const val CUR_STREAK = "cur_streak"
             const val DAYS_QUARANTINED = "days_quarantined"
             const val HIGHEST_STREAK = "highest_streak"
+            const val POSITION = "position"
+            const val IS_USER = "is_user"
+            const val TOP_USERS = "top"
             const val FAILED_AT = "failed_at"
         }
 

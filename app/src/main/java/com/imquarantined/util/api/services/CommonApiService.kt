@@ -2,6 +2,7 @@ package com.imquarantined.util.api.services
 
 import com.imquarantined.data.Const
 import com.imquarantined.data.api_response.AuthResponse
+import com.imquarantined.data.api_response.LeaderboardResponse
 import com.imquarantined.data.api_response.ProfileResponse
 import com.imquarantined.data.api_response.UpdateLocationsResponse
 import io.reactivex.Flowable
@@ -31,6 +32,9 @@ interface CommonApiService {
 
     @GET(Const.Api.ENDPOINTS.GET_PROFILE)
     fun getProfile(): Flowable<ProfileResponse>
+
+    @GET(Const.Api.ENDPOINTS.GET_LEADERBOARD)
+    fun getLeaderBoard(): Flowable<LeaderboardResponse>
 
 
     /*
