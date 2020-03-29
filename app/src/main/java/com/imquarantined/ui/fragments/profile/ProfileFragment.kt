@@ -1,12 +1,12 @@
-package com.imquarantined.ui.fragments.achievements
+package com.imquarantined.ui.fragments.profile
 
 import com.imquarantined.R
 import com.imquarantined.ui.base.BaseFragment
 /* Created by ashiq.buet16 **/
 
-class AchievementsFragment : BaseFragment() {
+class ProfileFragment : BaseFragment() {
     override fun getLayoutId(): Int {
-        return R.layout.fragment_achievements
+        return R.layout.fragment_profile
     }
 
     override fun afterOnViewCreated() {

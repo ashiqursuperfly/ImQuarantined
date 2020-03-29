@@ -9,21 +9,21 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.imquarantined.ui.fragments.home.HomeFragment"
-        android:label="HomeFragment"
+        android:label="Home"
         tools:layout="@layout/fragment_home"
     />
 
     <fragment
         android:id="@+id/leaderboardFragment"
         android:name="com.imquarantined.ui.fragments.leaderboard.LeaderboardFragment"
-        android:label="LeaderboardFragment"
+        android:label="Leaderboards"
         tools:layout="@layout/fragment_leaderboard"
     />
 
     <fragment
-        android:id="@+id/achievementsFragment"
-        android:name="com.imquarantined.ui.fragments.achievements.AchievementsFragment"
-        android:label="AchievementsFragment"
-        tools:layout="@layout/fragment_achievements"
+        android:id="@+id/profileFragment"
+        android:name="com.imquarantined.ui.fragments.profile.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile"
     />
 </navigation>

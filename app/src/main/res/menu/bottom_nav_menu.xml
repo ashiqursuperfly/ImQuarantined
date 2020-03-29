@@ -7,13 +7,13 @@
         android:icon="@drawable/ic_home_24dp"/>
 
     <item
-        android:id="@id/achievementsFragment"
-        android:title="Achievements"
-        android:icon="@drawable/ic_achievements_24dp"/>
+        android:id="@id/profileFragment"
+        android:title="Profile"
+        android:icon="@drawable/ic_user"/>
 
     <item
         android:id="@id/leaderboardFragment"
         android:title="Leaderboards"
-        android:icon="@drawable/ic_leaderboard_24dp"/>
+        android:icon="@drawable/ic_achievements_24dp"/>
 
 </menu>

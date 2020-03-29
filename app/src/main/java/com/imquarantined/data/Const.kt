@@ -32,6 +32,7 @@ class Const {
         object ENDPOINTS {
             const val AUTH = BASE_URL+"auth"
             const val UPDATE_LOCATION = BASE_URL+"location/update"
+            const val GET_PROFILE =  BASE_URL + "profile"
         }
 
         object Params {

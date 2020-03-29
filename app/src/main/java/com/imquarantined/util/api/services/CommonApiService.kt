@@ -2,11 +2,13 @@ package com.imquarantined.util.api.services
 
 import com.imquarantined.data.Const
 import com.imquarantined.data.api_response.AuthResponse
+import com.imquarantined.data.api_response.ProfileResponse
 import com.imquarantined.data.api_response.UpdateLocationsResponse
 import io.reactivex.Flowable
 import org.json.JSONArray
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 
@@ -27,9 +29,11 @@ interface CommonApiService {
         @Field(Const.Api.Params.POST.LOCATION_ARRAY) locations: JSONArray
     ): Flowable<UpdateLocationsResponse>
 
+    @GET(Const.Api.ENDPOINTS.GET_PROFILE)
+    fun getProfile(): Flowable<ProfileResponse>
+
+
     /*
-        @GET(Const.Api.ENDPOINTS.GET_PICKING_ORDER_LIST)
-        fun getPickingList(@Query(Const.Api.Params.GET.LIMIT) limit: Int): Flowable<AllOrdersResponse>
 
         @GET(Const.Api.ENDPOINTS.GET_PACKING_ORDER_LIST)
         fun getPackingList(@Query(Const.Api.Params.GET.LIMIT) limit: Int): Flowable<AllOrdersResponse>
