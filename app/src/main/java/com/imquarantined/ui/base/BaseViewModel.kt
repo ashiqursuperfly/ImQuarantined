@@ -1,7 +1,7 @@
 package com.imquarantined.ui.base
 
 import androidx.lifecycle.ViewModel
-import com.stylinecollection.opflex.util.api.ApiClient
+import com.imquarantined.util.api.ApiClient
 import io.reactivex.disposables.CompositeDisposable
 
 /* Created by ashiq.buet16 **/

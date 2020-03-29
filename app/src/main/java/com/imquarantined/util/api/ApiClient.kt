@@ -1,7 +1,8 @@
-package com.stylinecollection.opflex.util.api
+package com.imquarantined.util.api
 
 import com.imquarantined.data.Const
 import com.imquarantined.util.api.services.CommonApiService
+import com.imquarantined.util.helper.PrefUtil
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -17,11 +18,11 @@ object ApiClient {
 
             val request = chain.request().newBuilder()
 
-//            val token = PrefUtil.get(Const.PrefProp.TOKEN,"-1")
+            val token = PrefUtil.get(Const.PrefProp.LOGIN_TOKEN,"-1")
 
-//            if(token != "-1"){
-//                request.addHeader(Const.Api.Params.HEADER.AUTHORIZATION, "Bearer $token")
-//            }
+            if(token != "-1"){
+                request.addHeader(Const.Api.Params.HEADER.AUTHORIZATION, "Bearer $token")
+            }
 
             chain.proceed(request.build())
         }

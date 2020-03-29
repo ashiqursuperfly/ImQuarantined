@@ -1,9 +1,31 @@
 package com.imquarantined.util.api.services
 
+import com.imquarantined.data.Const
+import com.imquarantined.data.api_response.AuthResponse
+import com.imquarantined.data.api_response.UpdateLocationsResponse
+import io.reactivex.Flowable
+import org.json.JSONArray
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.POST
+
 
 /* Created by ashiq.buet16 **/
 
 interface CommonApiService {
+
+    @FormUrlEncoded
+    @POST(Const.Api.ENDPOINTS.AUTH)
+    fun login(
+        @Field(Const.Api.Params.POST.ID_TOKEN) idToken: String
+    ): Flowable<AuthResponse>
+
+
+    @FormUrlEncoded
+    @POST(Const.Api.ENDPOINTS.UPDATE_LOCATION)
+    fun updateLocations(
+        @Field(Const.Api.Params.POST.LOCATION_ARRAY) locations: JSONArray
+    ): Flowable<UpdateLocationsResponse>
 
     /*
         @GET(Const.Api.ENDPOINTS.GET_PICKING_ORDER_LIST)

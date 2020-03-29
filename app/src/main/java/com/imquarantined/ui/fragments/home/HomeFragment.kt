@@ -15,14 +15,15 @@ import com.firebase.ui.auth.IdpResponse
 import com.imquarantined.BuildConfig
 import com.imquarantined.R
 import com.imquarantined.data.Const
-import com.imquarantined.db.AppDb
-import com.imquarantined.db.LocationDao
 import com.imquarantined.ui.base.BaseFragment
 import com.imquarantined.ui.service.Actions
 import com.imquarantined.ui.service.EndlessService
 import com.imquarantined.ui.service.ServiceState
 import com.imquarantined.ui.service.getServiceState
-import com.imquarantined.util.helper.*
+import com.imquarantined.util.helper.DialogUtil
+import com.imquarantined.util.helper.FirebaseAuthUtil
+import com.imquarantined.util.helper.GPSUtil
+import com.imquarantined.util.helper.PermissionsUtil
 import com.imquarantined.util.helper.Toaster.showLongToast
 import com.imquarantined.util.helper.Toaster.showToast
 import com.karumi.dexter.PermissionToken
@@ -48,9 +49,11 @@ class HomeFragment : BaseFragment(){
         //TODO: remove this
         setClickListener(btn_dummy)
 
-        if (!mHomeViewModel.isUserLoggedIn()) startActivityForResult(FirebaseAuthUtil.getIntent(), Const.RequestCode.FIREBASE_AUTH)
-
         if(!shouldStartService())actionOnService(Actions.STOP)
+
+
+        if (!mHomeViewModel.isUserLoggedIn()) startActivityForResult(FirebaseAuthUtil.getIntent(), Const.RequestCode.FIREBASE_AUTH)
+        else initLocationTracking()
 
         val thread = Thread(object: Runnable{
             override fun run() {
@@ -74,9 +77,13 @@ class HomeFragment : BaseFragment(){
     private fun observeData() {
         mHomeViewModel.mLoginLiveData.observe(this, Observer {
             if (it) {
-                showToast("Welcome\n ${PrefUtil.get(Const.PrefProp.LOGIN_TOKEN, "-1")}")
+                // showToast("Saving token to sharedPref ${PrefUtil.get(Const.PrefProp.LOGIN_TOKEN, "-1")}")
                 DialogUtil.hideLoader()
                 initLocationTracking()
+            }
+            else {
+                DialogUtil.hideLoader()
+                activity?.finish()
             }
         })
     }
@@ -170,11 +177,6 @@ class HomeFragment : BaseFragment(){
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        if(mHomeViewModel.isUserLoggedIn())initLocationTracking()
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == Const.RequestCode.FIREBASE_AUTH) {
@@ -187,7 +189,7 @@ class HomeFragment : BaseFragment(){
                     ?.addOnCompleteListener { task ->
                         if (task.isSuccessful) {
                             val idToken: String = task.result?.token ?: ""
-                            Timber.i("Token\n$idToken")
+                            Timber.i("Fetched Id Token\n$idToken")
                             mHomeViewModel.login(idToken)
                         } else {
                             showToast(task.exception?.message.toString())

@@ -19,18 +19,22 @@ import com.imquarantined.data.Const
 import com.imquarantined.data.LocationEntity
 import com.imquarantined.db.AppDb
 import com.imquarantined.ui.MainActivity
-import com.imquarantined.util.helper.CustomTimerTask
-import com.imquarantined.util.helper.GPSUtil
-import com.imquarantined.util.helper.LocalNotificationUtil
-import com.imquarantined.util.helper.SensorUtil
+import com.imquarantined.util.api.ApiClient
+import com.imquarantined.util.helper.*
 import com.imquarantined.util.helper.Toaster.showToast
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 import timber.log.Timber
 import java.util.*
 import kotlin.collections.ArrayList
+
 
 class EndlessService : Service(), CustomServiceTask {
 
@@ -38,7 +42,7 @@ class EndlessService : Service(), CustomServiceTask {
 
     private lateinit var mPressureSensorListener: SensorEventListener
     private lateinit var mLocationListener: LocationListener
-    private lateinit var mLocationData : LocationEntity
+    private lateinit var mLastKnowLocation : LocationEntity
 
     private var gpsUtil = GPSUtil()
     var atmosphericPressure  = SensorManager.PRESSURE_STANDARD_ATMOSPHERE
@@ -47,22 +51,15 @@ class EndlessService : Service(), CustomServiceTask {
     var i=0L
     override fun backGroundWork() {
         if(gpsUtil.isGpsEnabled(this)){
-            if(::mLocationData.isInitialized) {
-
+            if(::mLastKnowLocation.isInitialized) {
                 val locations = ArrayList(mLocationsDao.getLocationsData())
+                locations.add(mLastKnowLocation)
 
-                for (item in locations){
-                    Timber.d("**DB**: $item") //TODO: remove this
+                if(locations.size < 2)mLocationsDao.insert(mLastKnowLocation)
+                else {
+                    updateLocationsRemote(locations)
                 }
-                locations.add(mLocationData)
-                //TODO: send locations to server,
-                // if successful, deleteAll() from DB
-                // If not successful, add mLocationData to DB
-                mLocationsDao.insert(mLocationData)
-
-                Timber.d("**BGWORK** Location $i: $mLocationData")
-
-
+                Timber.d("**BGWORK** Location $i: $mLastKnowLocation")
             }
 
         }
@@ -99,7 +96,7 @@ class EndlessService : Service(), CustomServiceTask {
                         atmosphericPressure
                     )
 
-                    mLocationData = LocationEntity(latitude = location.latitude, longitude = location.longitude, altitude = alt.toDouble(), dateTime = Date(System.currentTimeMillis()))
+                    mLastKnowLocation = LocationEntity(latitude = location.latitude, longitude = location.longitude, altitude = alt.toDouble(), dateTime = Date(System.currentTimeMillis()))
                 }
             }
 
@@ -157,7 +154,61 @@ class EndlessService : Service(), CustomServiceTask {
         timer.schedule(task, n)
     }
 
-        /* The following code should NOT be changed */
+    private fun updateLocationsRemote(items: ArrayList<LocationEntity>) {
+        val token = PrefUtil.get(Const.PrefProp.LOGIN_TOKEN, "-1")
+        if (token == "-1") {
+            LocalNotificationUtil.showNotification(
+                this,
+                "Not logged in?",
+                "This should never happen.",
+                Intent(this, MainActivity::class.java),
+                Const.Notification.promptLoginChannelId,
+                Const.Notification.promptLoginChannelName
+            )
+            return
+        }
+
+        val jo = JSONObject()
+        val ja = JSONArray()
+
+        for(i in 0 until items.size){
+            ja.put(i,jo.put(Const.Api.Params.POST.LAT, items[i].latitude))
+            ja.put(i,jo.put(Const.Api.Params.POST.LONG, items[i].longitude))
+            ja.put(i,jo.put(Const.Api.Params.POST.ALTI, items[i].altitude))
+            ja.put(i,jo.put(Const.Api.Params.POST.DATE_TIME, items[i].dateTime))
+        }
+
+        Timber.d("Updating Locations:\n $ja")
+
+        val disposable = CompositeDisposable()
+        val api = ApiClient.createCommonApiService()
+
+        disposable.add(
+            api.updateLocations(ja)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    DialogUtil.hideLoader()
+                    if (it.isSuccess) {
+                        //remove all from db except the latest(since the latest is not in db)
+                        Timber.d("UpdateLocationsResponse: $it")
+                        items.remove(items.last())
+                        for (item in items) mLocationsDao.delete(item)
+
+                    } else {
+                        Timber.d("UpdateLocationsResponse: $it")
+                        for (item in items) mLocationsDao.delete(item)
+                        //TODO:Show notfication using failed at
+                    }
+                }, {
+                    Timber.d("UpdateLocationsResponse: $it")
+                    //push only latest location to db, since all the others must be in db anyway
+                    mLocationsDao.insert(items.last())
+                })
+        )
+    }
+
+    /* The following code should NOT be changed */
     private var wakeLock: PowerManager.WakeLock? = null
     private var isServiceStarted = false
 

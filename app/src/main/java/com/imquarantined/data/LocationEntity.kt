@@ -14,16 +14,16 @@ data class LocationEntity (
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = DbConstants.LocationsTable.COL_ID)
     var id: Long? = null,
-    @SerializedName("lat")
+    @SerializedName(Const.Api.Params.POST.LAT)
     @ColumnInfo(name = DbConstants.LocationsTable.COL_LAT)
     var latitude: Double = 0.0,
-    @SerializedName("long")
+    @SerializedName(Const.Api.Params.POST.LONG)
     @ColumnInfo(name = DbConstants.LocationsTable.COL_LONG)
     var longitude: Double = 0.0,
-    @SerializedName("alti")
+    @SerializedName(Const.Api.Params.POST.ALTI)
     @ColumnInfo(name = DbConstants.LocationsTable.COL_ALTI)
     var altitude: Double = 0.0,
-    @SerializedName("date_time")
+    @SerializedName(Const.Api.Params.POST.DATE_TIME)
     @ColumnInfo(name= DbConstants.LocationsTable.COL_DATE_TIME)
     var dateTime: Date = Date()
 )

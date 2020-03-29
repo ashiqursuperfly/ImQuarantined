@@ -6,17 +6,36 @@ import com.imquarantined.ui.base.BaseViewModel
 import com.imquarantined.util.helper.FirebaseAuthUtil
 import com.imquarantined.util.helper.PrefUtil
 import com.imquarantined.util.helper.Toaster.showToast
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 
 class HomeViewModel : BaseViewModel() {
 
     val mLoginLiveData = MutableLiveData<Boolean>()
 
     fun login(idToken: String) {
-        PrefUtil.set(Const.PrefProp.LOGIN_TOKEN, idToken)
-        //TODO:
-        // make api call, the token and verify
-        // set pref only after backend verifies the user
-        mLoginLiveData.postValue(true)
+        mDisposable.add(
+            mCommonApiService.login(idToken)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    if (it.isSuccess) {
+                        PrefUtil.set(Const.PrefProp.LOGIN_TOKEN, idToken)
+                        mLoginLiveData.postValue(true)
+                        showToast("Welcome: ${it.data.userName}")
+                        Timber.d("Response: ${it}")
+
+                    } else {
+                        mLoginLiveData.postValue(false)
+                        showToast("Login Failed: ${it.message}")
+                    }
+                }, {
+                    mLoginLiveData.postValue(false)
+                    showToast("Login Failed: ${it.message}")
+                }
+                )
+        )
     }
 
     fun signOut() {

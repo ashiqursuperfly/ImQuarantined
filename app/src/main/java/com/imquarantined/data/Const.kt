@@ -11,6 +11,8 @@ class Const {
     }
 
     object Notification {
+        const val promptLoginChannelId = "prompt_login_notification_channel_id${BuildConfig.APPLICATION_ID}"
+        const val promptLoginChannelName = "prompt_login_notification_channel_name${BuildConfig.APPLICATION_ID}"
         const val bgServiceChannelName = "bg_service_notification_channel_name${BuildConfig.APPLICATION_ID}"
         const val bgServiceChannelId = "bg_service_notification_channel_id${BuildConfig.APPLICATION_ID}"
         const val promptGpsOffWhileBgTaskChannelId = "prompt_gps_off_while_bg_task_id${BuildConfig.APPLICATION_ID}"
@@ -25,9 +27,11 @@ class Const {
     }
 
     object Api {
-        const val BASE_URL = "https://imquarantined.herokuapp.com/api"
+        const val BASE_URL = "http://imquarantined.herokuapp.com/api/"
 
         object ENDPOINTS {
+            const val AUTH = BASE_URL+"auth"
+            const val UPDATE_LOCATION = BASE_URL+"location/update"
         }
 
         object Params {
@@ -36,10 +40,26 @@ class Const {
             }
 
             object POST {
+                const val ID_TOKEN = "id_token"
+                const val LOCATION_ARRAY = "locations"
+                const val LAT = "lat"
+                const val LONG = "long"
+                const val ALTI = "alti"
+                const val DATE_TIME = "date_time"
+
             }
 
             object HEADER {
+                const val AUTHORIZATION = "Authorization"
             }
+        }
+
+        object Response {
+            const val SUCCESS = "success"
+            const val MESSAGE = "message"
+            const val DATA = "data"
+            const val USER_NAME = "name"
+            const val FAILED_AT = "failed_at"
         }
 
     }
