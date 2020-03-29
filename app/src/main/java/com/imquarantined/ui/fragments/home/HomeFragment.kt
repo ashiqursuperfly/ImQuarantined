@@ -90,7 +90,7 @@ class HomeFragment : BaseFragment(){
                 return@Observer
             }
 
-            pb_progress.progress = if (it.data.progress < 20) 20 else it.data.progress
+            pb_progress.progress = if (it.data.progress < 15) 15 else it.data.progress
             val progressText = "${it.data.hr}hr ${it.data.min}min ${it.data.sec}sec"
             tv_progress.text = progressText
 

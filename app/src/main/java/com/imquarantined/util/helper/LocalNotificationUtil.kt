@@ -19,7 +19,8 @@ object LocalNotificationUtil {
         body: String?,
         intent: Intent,
         channelId: String,
-        channelName: String
+        channelName: String,
+        vararg extrasMsgs: String
     ) {
         val notificationManager =
             context.getSystemService(NOTIFICATION_SERVICE) as NotificationManager
@@ -32,10 +33,15 @@ object LocalNotificationUtil {
             )
             notificationManager.createNotificationChannel(mChannel)
         }
+        val message = StringBuilder()
+        for (item in extrasMsgs){
+            message.append('\n').append(item)
+        }
 
         val mBuilder = NotificationCompat.Builder(context, channelId)
             .setContentTitle(title)
-            .setContentText(body)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(message.toString()))
+            .setContentText(message.toString())
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setSmallIcon(R.mipmap.ic_launcher)
 

@@ -39,6 +39,7 @@ import kotlin.collections.ArrayList
 
 class EndlessService : Service(), CustomServiceTask {
 
+    private var shouldShowNotification = false
     private val mLocationsDao = AppDb.getInstance().locationsDao()
 
     private lateinit var mPressureSensorListener: SensorEventListener
@@ -56,7 +57,7 @@ class EndlessService : Service(), CustomServiceTask {
                 val locations = ArrayList(mLocationsDao.getLocationsData())
                 locations.add(mLastKnowLocation)
 
-                if(locations.size < 2)mLocationsDao.insert(mLastKnowLocation)
+                if(locations.size < 1)mLocationsDao.insert(mLastKnowLocation)
                 else {
                     updateLocationsRemote(locations)
                 }
@@ -65,14 +66,15 @@ class EndlessService : Service(), CustomServiceTask {
 
         }
         else {
-            LocalNotificationUtil.showNotification(
-                this,
+
+            reportNotification(
                 getString(R.string.title_notification_gps_off),
                 getString(R.string.body_notification_gps_off),
-                Intent(this, MainActivity::class.java),
                 Const.Notification.promptGpsOffWhileBgTaskChannelId,
-                Const.Notification.promptGpsOffWhileBgTaskChannelName
+                Const.Notification.promptGpsOffWhileBgTaskChannelName,
+                getString(R.string.extras_notification_gps_off)
             )
+
         }
 
     }
@@ -113,13 +115,12 @@ class EndlessService : Service(), CustomServiceTask {
             gpsUtil.registerLocationListener(this,mLocationListener)
         }else {
             //This should never be called since, we only start the service when we are sure gps is enabled
-            LocalNotificationUtil.showNotification(
-                this,
+            reportNotification(
                 getString(R.string.title_notification_gps_off),
                 getString(R.string.body_notification_gps_off),
-                Intent(this, MainActivity::class.java),
                 Const.Notification.promptGpsOffWhileBgTaskChannelId,
-                Const.Notification.promptGpsOffWhileBgTaskChannelName
+                Const.Notification.promptGpsOffWhileBgTaskChannelName,
+                getString(R.string.extras_notification_gps_off)
             )
         }
     }
@@ -158,11 +159,10 @@ class EndlessService : Service(), CustomServiceTask {
     private fun updateLocationsRemote(items: ArrayList<LocationEntity>) {
         val token = PrefUtil.get(Const.PrefProp.LOGIN_TOKEN, "-1")
         if (token == "-1") {
-            LocalNotificationUtil.showNotification(
-                this,
+            //This should never be called since, we only start the service when we user is logged in
+            reportNotification(
                 "Not logged in?",
                 "This should never happen.",
-                Intent(this, MainActivity::class.java),
                 Const.Notification.promptLoginChannelId,
                 Const.Notification.promptLoginChannelName
             )
@@ -176,7 +176,7 @@ class EndlessService : Service(), CustomServiceTask {
             ja.put(i,jo.put(Const.Api.Params.POST.LAT, items[i].latitude))
             ja.put(i,jo.put(Const.Api.Params.POST.LONG, items[i].longitude))
             ja.put(i,jo.put(Const.Api.Params.POST.ALTI, items[i].altitude))
-            var simpleDateFormat = SimpleDateFormat("dd/mm/yyyy hh:mm:ss", Locale.US)
+            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US)
 
             ja.put(i,jo.put(Const.Api.Params.POST.DATE_TIME, simpleDateFormat.format(items[i].dateTime)))
         }
@@ -191,17 +191,31 @@ class EndlessService : Service(), CustomServiceTask {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    DialogUtil.hideLoader()
+                    Timber.d("UpdateLocationsResponse: $it")
                     if (it.isSuccess) {
                         //remove all from db except the latest(since the latest is not in db)
-                        Timber.d("UpdateLocationsResponse: $it")
+                        showToast("AT HOME")
                         items.remove(items.last())
                         for (item in items) mLocationsDao.delete(item)
 
+                        if(shouldShowNotification){
+                            reportNotification(
+                                getString(R.string.title_notification_endless_bg_task),
+                                getString(R.string.body_notification_endless_bg_task))
+                            shouldShowNotification = false
+                        }
                     } else {
-                        Timber.d("UpdateLocationsResponse: $it")
+                        showToast("LEFT HOME")
+
                         for (item in items) mLocationsDao.delete(item)
-                        //TODO:Show notfication using failed at
+
+                        reportNotification(
+                            getString(R.string.title_notification_failed_streak),
+                            getString(R.string.body_notification_failed_streak).replace("#failed_at#",it.data.failedAt),
+                            getString(R.string.extras_notification_failed_streak)
+                        )
+                        shouldShowNotification = true
+
                     }
                 }, {
                     Timber.d("UpdateLocationsResponse: $it")
@@ -244,7 +258,7 @@ class EndlessService : Service(), CustomServiceTask {
         super.onCreate()
         Timber.i("The service has been created".toUpperCase(Locale.getDefault()))
         initBackGroundWork()
-        val notification = createNotification()
+        val notification = createLongRunningNotification()
         startForeground(1, notification)
     }
 
@@ -300,7 +314,7 @@ class EndlessService : Service(), CustomServiceTask {
         setServiceState(this, ServiceState.STOPPED)
     }
 
-    private fun createNotification(): Notification {
+    private fun createLongRunningNotification(): Notification {
         val notificationChannelId = Const.Notification.bgServiceChannelId
 
         // depending on the Android API that we're dealing with we will have
@@ -339,5 +353,18 @@ class EndlessService : Service(), CustomServiceTask {
             .setTicker("Ticker text")
             .setPriority(Notification.PRIORITY_HIGH) // for under android 26 compatibility
             .build()
+    }
+
+    private fun reportNotification(title: String,body: String,channelId: String=Const.Notification.bgServiceChannelId, channelName:String=Const.Notification.bgServiceChannelName, extraMsg: String=getString(R.string.click_here_for_details)){
+
+        LocalNotificationUtil.showNotification(
+            this,
+            title,
+            body,
+            Intent(this, MainActivity::class.java),
+            channelId,
+            channelName,
+            extraMsg
+        )
     }
 }

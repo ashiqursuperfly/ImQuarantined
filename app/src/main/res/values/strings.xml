@@ -14,7 +14,8 @@
 
     <!--NOTIFICATIONS-->
     <string name="title_notification_gps_off">We got an eye on you 🧐</string>
-    <string name="body_notification_gps_off">Are you🧐 trying to sneak out? 😈 \n <b>Enable your GPS RIGHT NOW</b> or you will be missing out on so much ! 👎👎</string>
+    <string name="body_notification_gps_off">Are you🧐 trying to sneak out? 😈👎👎</string>
+    <string name="extras_notification_gps_off"><b>Enable your GPS RIGHT NOW</b> or you will be missing out on so much !</string>
     <string name="title_notification_endless_bg_task">Looking Good 🤩</string>
     <string name="body_notification_endless_bg_task">Stay at home with us and save the world 😌</string>
     <string name="db_name">imquarantined_db</string>
@@ -22,4 +23,8 @@
     <string name="label_current_streak">Current Streak</string>
     <string name="days_quarantined">Days Quarantined</string>
     <string name="label_highest_streak">Highest Streak</string>
+    <string name="title_notification_failed_streak">You went OUT !</string>
+    <string name="body_notification_failed_streak">Your streak ended today at #failed_at#</string>
+    <string name="extras_notification_failed_streak">Starting new streak from now.</string>
+    <string name="click_here_for_details"><B>Click Here</B> for Details</string>
 </resources>
