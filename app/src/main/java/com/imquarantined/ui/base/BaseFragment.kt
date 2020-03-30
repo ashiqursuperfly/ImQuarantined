@@ -1,5 +1,6 @@
 package com.imquarantined.ui.base
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -48,4 +49,15 @@ abstract class BaseFragment: Fragment(), View.OnClickListener {
         views.forEach { view -> view.setOnClickListener(this) }
     }
 
+    private var mContext: Context? = null
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        mContext = context
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        mContext = null
+    }
 }

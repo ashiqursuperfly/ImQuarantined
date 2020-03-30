@@ -80,7 +80,7 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 android:text="@string/txt_refresh"
                 app:cornerRadius="@dimen/dp30"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/colorWhite"
                 app:backgroundTint="@color/colorPrimaryDark"
                 app:layout_constraintWidth_percent="0.7"
                 app:layout_constraintStart_toStartOf="parent"

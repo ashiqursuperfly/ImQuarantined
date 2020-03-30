@@ -40,6 +40,7 @@ class HomeFragment : BaseFragment(){
         return R.layout.fragment_home
     }
 
+
     override fun afterOnViewCreated() {
         observeData()
 
@@ -98,7 +99,7 @@ class HomeFragment : BaseFragment(){
 
     private fun shouldStartService() : Boolean {
         if (mHomeViewModel.isUserLoggedIn()
-            && gpsUtil.isGpsEnabled(requireContext())
+            && gpsUtil.isGpsEnabled(requireActivity())
             && PermissionsUtil.isPermissionAllowed(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
         )return true
         else return false
