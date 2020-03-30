@@ -287,7 +287,7 @@ class EndlessService : Service(), CustomServiceTask {
                 launch(Dispatchers.IO) {
                     backGroundWork()
                 }
-                delay(Const.Config.backgroundTaskPeriod)
+                delay(Const.Config.backgroundTaskPeriod.toLong())
             }
             Timber.i("End of the loop for the service")
         }

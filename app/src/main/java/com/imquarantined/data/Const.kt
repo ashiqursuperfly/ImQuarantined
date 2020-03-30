@@ -5,9 +5,9 @@ import com.imquarantined.BuildConfig
 class Const {
 
     object Config {
-        const val calibrationPoints = 10
-        const val locationRequestPeriodMillis = 10000L // TODO: before deploying it should be bgTaskPeriod/3
-        const val backgroundTaskPeriod =  3 * locationRequestPeriodMillis
+        const val calibrationPoints = 15
+        const val locationRequestPeriodMillis = 1000L * 60 * 8 // make a location request every 7 minutes
+        const val backgroundTaskPeriod =  1.5 * locationRequestPeriodMillis // do bg task a little slower to ensure the new location is always ready
     }
 
     object Notification {
