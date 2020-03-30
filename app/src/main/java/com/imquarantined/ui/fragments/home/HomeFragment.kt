@@ -45,7 +45,6 @@ class HomeFragment : BaseFragment(){
 
         if(!shouldStartService())actionOnService(Actions.STOP)
 
-
         if (!mHomeViewModel.isUserLoggedIn()) startActivityForResult(FirebaseAuthUtil.getIntent(), Const.RequestCode.FIREBASE_AUTH)
         else {
             mHomeViewModel.loadHomeContents()
@@ -98,8 +97,8 @@ class HomeFragment : BaseFragment(){
     }
 
     private fun shouldStartService() : Boolean {
-        if (gpsUtil.isGpsEnabled(requireContext())
-            && mHomeViewModel.isUserLoggedIn()
+        if (mHomeViewModel.isUserLoggedIn()
+            && gpsUtil.isGpsEnabled(requireContext())
             && PermissionsUtil.isPermissionAllowed(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
         )return true
         else return false
@@ -111,6 +110,15 @@ class HomeFragment : BaseFragment(){
 
         if(PermissionsUtil.isPermissionAllowed(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)){
             enableGPS()
+        }
+        else if (PermissionsUtil.isPermissionDenied(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+            showToast("Please Enable Location Permission")
+            startActivity(
+                Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+                )
+            )
         }
         else {
             PermissionsUtil.requestPermission(

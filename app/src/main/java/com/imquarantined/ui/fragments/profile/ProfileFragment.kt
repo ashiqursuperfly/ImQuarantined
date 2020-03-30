@@ -1,13 +1,27 @@
 package com.imquarantined.ui.fragments.profile
 
+import android.Manifest
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
+import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import com.imquarantined.BuildConfig
 import com.imquarantined.R
 import com.imquarantined.ui.base.BaseFragment
+import com.imquarantined.util.helper.AndroidUtil
 import com.imquarantined.util.helper.DialogUtil
+import com.imquarantined.util.helper.PermissionsUtil
 import com.imquarantined.util.helper.Toaster.showToast
 import com.imquarantined.util.helper.load
+import com.karumi.dexter.PermissionToken
+import com.karumi.dexter.listener.PermissionDeniedResponse
+import com.karumi.dexter.listener.PermissionGrantedResponse
+import com.karumi.dexter.listener.PermissionRequest
+import com.karumi.dexter.listener.single.PermissionListener
 import kotlinx.android.synthetic.main.fragment_profile.*
+
 
 /* Created by ashiq.buet16 **/
 class ProfileFragment : BaseFragment() {
@@ -21,6 +35,7 @@ class ProfileFragment : BaseFragment() {
     override fun afterOnViewCreated() {
 
         observeData()
+        setClickListener(btn_take_ss)
         DialogUtil.showLoader(requireContext())
         mProfileViewModel.loadProfile()
     }
@@ -42,5 +57,53 @@ class ProfileFragment : BaseFragment() {
             tv_highest_streak.text= it.data.highestStreak.toString()
             tv_user_email.text=""
         })
+    }
+
+    override fun onClick(v: View?) {
+        super.onClick(v)
+        if(v!=null){
+            if(PermissionsUtil.isPermissionAllowed(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                AndroidUtil.storeImage(AndroidUtil.takescreenshotOfRootView(v), requireContext())
+            }
+            else if (PermissionsUtil.isPermissionDenied(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                showToast("Cannot Share, Without Storage Permission. Please Enable Storage Permission")
+                startActivity(
+                    Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+                    )
+                )
+            }
+            else {
+                PermissionsUtil.requestPermission(requireContext(),
+                    requireActivity(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    object : PermissionListener {
+                        override fun onPermissionGranted(response: PermissionGrantedResponse?) {
+                            AndroidUtil.storeImage(AndroidUtil.takescreenshotOfRootView(v), requireContext())
+                        }
+
+                        override fun onPermissionRationaleShouldBeShown(
+                            permission: PermissionRequest?,
+                            token: PermissionToken?
+                        ) {
+                        }
+
+                        override fun onPermissionDenied(response: PermissionDeniedResponse?) {
+                            showToast("Cannot Share, Without Storage Permission. Please Enable Storage Permission")
+                            startActivity(
+                                Intent(
+                                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                                    Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+                                )
+                            )
+                        }
+
+                    }
+                )
+
+            }
+
+        }
     }
 }

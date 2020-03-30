@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.single.PermissionListener
-import timber.log.Timber
 
 /* Created by ashiq.buet16 **/
 
@@ -32,6 +31,15 @@ object PermissionsUtil {
         )
         // Timber.d("Permission Status:$hasPermission")
         return hasPermission == PackageManager.PERMISSION_GRANTED
+    }
+
+    fun isPermissionDenied(context: Context, permission: String): Boolean {
+        val pm: PackageManager = context.packageManager
+        val hasPermission = pm.checkPermission(
+            permission,
+            context.packageName
+        )
+        return hasPermission == PackageManager.PERMISSION_DENIED
     }
 
 }

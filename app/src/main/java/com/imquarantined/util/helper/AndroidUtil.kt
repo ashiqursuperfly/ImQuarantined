@@ -9,7 +9,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import android.text.Html
 import android.text.Spanned
 import android.text.TextUtils
@@ -25,11 +27,13 @@ import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.imquarantined.BuildConfig
 import com.imquarantined.ImQuarantinedApp
 import com.imquarantined.R
 import timber.log.Timber
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
+import java.util.*
 import kotlin.math.sqrt
 
 object AndroidUtil {
@@ -190,4 +194,31 @@ object AndroidUtil {
         textView.text = formattedText
     }
 
+
+    fun storeImage(bitmap: Bitmap, context: Context) {
+
+        val path: String = MediaStore.Images.Media.insertImage(
+            context.contentResolver,
+            bitmap,
+            "${BuildConfig.APPLICATION_ID}${Date()}",
+            null
+        )
+        val uri: Uri = Uri.parse(path)
+
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "image/jpeg"
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        context.startActivity(Intent.createChooser(intent, "Share Image"))
+    }
+
+
+
+    fun takescreenshotOfRootView(v: View): Bitmap {
+        v.rootView.isDrawingCacheEnabled = true
+        v.rootView.buildDrawingCache(true)
+        val b = Bitmap.createBitmap(v.rootView.drawingCache)
+        v.rootView.isDrawingCacheEnabled = false
+        return b
+
+    }
 }
