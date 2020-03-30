@@ -33,7 +33,7 @@ object LocalNotificationUtil {
             )
             notificationManager.createNotificationChannel(mChannel)
         }
-        val message = StringBuilder()
+        val message = StringBuilder(body.toString())
         for (item in extrasMsgs){
             message.append('\n').append(item)
         }

@@ -29,5 +29,6 @@
     <string name="txt_refresh">Refresh</string>
     <string name="txt_network_problem">Network Problem</string>
     <string name="invalid_email_exception">Invalid Email !</string>
+    <string name="extras_notification_endless_bg_task">Keep STAYING at HOME, you closing down on a new STREAK!</string>
 
 </resources>
