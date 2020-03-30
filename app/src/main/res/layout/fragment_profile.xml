@@ -41,6 +41,8 @@
                 app:civ_border_color="@color/colorPrimary"
                 tools:src="@drawable/ic_user" />
 
+
+
             <TextView
                 android:id="@+id/tv_user_name"
                 android:layout_width="match_parent"
