@@ -7,16 +7,17 @@
         android:layout_height="match_parent"
         android:background="@android:color/transparent">
 
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/anim_no_network"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            app:lottie_rawRes="@raw/pb_loader"
+            app:lottie_loop="true"
+            app:lottie_autoPlay="true"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>

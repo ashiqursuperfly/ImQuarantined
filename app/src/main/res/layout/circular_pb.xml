@@ -10,7 +10,7 @@
         style="?android:progressBarStyleHorizontal"
         android:layout_width="150dp"
         android:layout_height="150dp"
-        android:indeterminateDrawable="@drawable/circular_pb"
+        android:indeterminateDrawable="@drawable/circular_pb_accent"
         android:progress="80"
-        android:progressDrawable="@drawable/circular_pb" />
+        android:progressDrawable="@drawable/circular_pb_accent" />
 </LinearLayout>

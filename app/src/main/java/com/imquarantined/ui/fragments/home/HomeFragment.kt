@@ -30,9 +30,11 @@ import com.karumi.dexter.listener.PermissionRequest
 import com.karumi.dexter.listener.single.PermissionListener
 import kotlinx.android.synthetic.main.fragment_home.*
 import timber.log.Timber
+import java.util.*
 
 class HomeFragment : BaseFragment(){
 
+    private lateinit var timer: Timer
     private val mHomeViewModel: HomeViewModel by viewModels()
     private var gpsUtil = GPSUtil()
 
@@ -46,10 +48,11 @@ class HomeFragment : BaseFragment(){
 
         if(!shouldStartService())actionOnService(Actions.STOP)
 
+
         if (!mHomeViewModel.isUserLoggedIn()) startActivityForResult(FirebaseAuthUtil.getIntent(), Const.RequestCode.FIREBASE_AUTH)
         else {
+            DialogUtil.showLoader(requireContext())
             mHomeViewModel.loadHomeContents()
-            initLocationTracking()
         }
 
         val thread = Thread(object: Runnable{
@@ -62,8 +65,6 @@ class HomeFragment : BaseFragment(){
 
         })
         thread.start()
-
-
     }
 
     override fun onClick(v: View?) {
@@ -74,7 +75,6 @@ class HomeFragment : BaseFragment(){
             if (it) {
                 Timber.i("Saving token to sharedPref ${PrefUtil.get(Const.PrefProp.LOGIN_TOKEN, "-1")}")
                 mHomeViewModel.loadHomeContents()
-                initLocationTracking()
             }
             else {
                 DialogUtil.hideLoader()
@@ -84,7 +84,7 @@ class HomeFragment : BaseFragment(){
 
         mHomeViewModel.mHomeContentsLiveData.observe(this, Observer {
             DialogUtil.hideLoader()
-
+            initLocationTracking()
             if(it == null || !it.isSuccess){
                 showToast("Error loading HomeContents: ${it?.message?:""}")
                 return@Observer
@@ -93,6 +93,11 @@ class HomeFragment : BaseFragment(){
             pb_progress.progress = if (it.data.progress < 15) 15 else it.data.progress
             val progressText = "${it.data.hr}hr ${it.data.min}min ${it.data.sec}sec"
             tv_progress.text = progressText
+            tv_current_streak.text = it.data.currentStreak.toString()
+            if(::timer.isInitialized){
+                timer.cancel()
+            }
+            updatePeriodicLocation()
 
         })
     }
@@ -112,7 +117,7 @@ class HomeFragment : BaseFragment(){
         if(PermissionsUtil.isPermissionAllowed(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)){
             enableGPS()
         }
-        else if (PermissionsUtil.isPermissionDenied(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+        /*else if (PermissionsUtil.isPermissionDenied(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) && mHomeViewModel.isUserLoggedIn()){
             showToast("Please Enable Location Permission")
             startActivity(
                 Intent(
@@ -120,7 +125,7 @@ class HomeFragment : BaseFragment(){
                     Uri.parse("package:" + BuildConfig.APPLICATION_ID)
                 )
             )
-        }
+        }*/
         else {
             PermissionsUtil.requestPermission(
                 requireContext(),
@@ -181,6 +186,38 @@ class HomeFragment : BaseFragment(){
         return true
     }
 
+    private fun updatePeriodicLocation(){
+        val task = CustomTimerTask()
+        task.setCallback(object: CustomTimerTask.TimerCallback {
+            override fun onTime() {
+                // do stuff, update UI using runOnUiThread for e.g:
+                activity?.runOnUiThread {
+                    try {
+                        val txt = tv_progress.text
+                        val data = txt.split(" ")
+                        val hr = data[0].substring(0, data[0].length - 2).toInt()
+                        val min = data[1].substring(0, data[1].length - 3).toInt()
+                        val sec = data[2].substring(0, data[2].length - 3).toInt()
+
+                        val timeSecs = hr*60*60 + min*60 + sec - 1
+                        val uHr = timeSecs/3600
+                        val uMin = (timeSecs / 60) % 60
+                        val uSec = timeSecs % 60
+
+                        val uProgress = "${uHr}hr ${uMin}min ${uSec}sec"
+                        if(uHr in 0..23 && uMin in 0..60 && uSec in 0..60)tv_progress.text = uProgress
+                    }catch (e: Exception){}
+
+                }
+            }
+        })
+
+        val period = 1000L //arbitrary
+        val initialDelay = 10L //arbitrary
+        timer = Timer()
+        timer.scheduleAtFixedRate(task, initialDelay, period)
+    }
+
     private fun actionOnService(action: Actions) {
         if (getServiceState(requireContext()) == ServiceState.STOPPED && action == Actions.STOP) return
         Intent(activity, EndlessService::class.java).also {
@@ -193,10 +230,6 @@ class HomeFragment : BaseFragment(){
             Timber.i("Starting the service in < 26 Mode")
             activity?.startService(it)
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -231,5 +264,7 @@ class HomeFragment : BaseFragment(){
         }
     }
 
-
+    override fun onResume() {
+        super.onResume()
+    }
 }

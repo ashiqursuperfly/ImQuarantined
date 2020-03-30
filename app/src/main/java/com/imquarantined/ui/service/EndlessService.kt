@@ -32,7 +32,6 @@ import kotlinx.coroutines.launch
 import org.json.JSONArray
 import org.json.JSONObject
 import timber.log.Timber
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -74,7 +73,7 @@ class EndlessService : Service(), CustomServiceTask {
                 Const.Notification.promptGpsOffWhileBgTaskChannelName,
                 getString(R.string.extras_notification_gps_off)
             )
-
+            shouldShowNotification = true
         }
 
     }
@@ -176,9 +175,7 @@ class EndlessService : Service(), CustomServiceTask {
             ja.put(i,jo.put(Const.Api.Params.POST.LAT, items[i].latitude))
             ja.put(i,jo.put(Const.Api.Params.POST.LONG, items[i].longitude))
             ja.put(i,jo.put(Const.Api.Params.POST.ALTI, items[i].altitude))
-            val simpleDateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US)
-
-            ja.put(i,jo.put(Const.Api.Params.POST.DATE_TIME, simpleDateFormat.format(items[i].dateTime)))
+            ja.put(i,jo.put(Const.Api.Params.POST.DATE_TIME, (items[i].dateTime.time /1000L)))
         }
 
         Timber.d("Updating Locations:\n $ja")
@@ -194,7 +191,7 @@ class EndlessService : Service(), CustomServiceTask {
                     Timber.d("UpdateLocationsResponse: $it")
                     if (it.isSuccess) {
                         //remove all from db except the latest(since the latest is not in db)
-                        showToast("AT HOME")
+                        showToast("STILL AT HOME")
                         items.remove(items.last())
                         for (item in items) mLocationsDao.delete(item)
 
@@ -218,7 +215,7 @@ class EndlessService : Service(), CustomServiceTask {
 
                     }
                 }, {
-                    Timber.d("UpdateLocationsResponse: $it")
+                    Timber.d("UpdateLocationsResponse:\n${it}\n${it.localizedMessage}")
                     //push only latest location to db, since all the others must be in db anyway
                     mLocationsDao.insert(items.last())
                 })
@@ -330,7 +327,7 @@ class EndlessService : Service(), CustomServiceTask {
                 it.enableLights(true)
                 it.lightColor = Color.RED
                 it.enableVibration(true)
-                it.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+                it.vibrationPattern = longArrayOf(100, 200, 300, 200, 100)
                 it
             }
             notificationManager.createNotificationChannel(channel)

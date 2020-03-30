@@ -1,8 +1,10 @@
 package com.imquarantined.ui.fragments.profile
 
 import androidx.lifecycle.MutableLiveData
+import com.imquarantined.data.Const
 import com.imquarantined.data.api_response.ProfileResponse
 import com.imquarantined.ui.base.BaseViewModel
+import com.imquarantined.util.helper.PrefUtil
 import com.imquarantined.util.helper.Toaster.showToast
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -31,4 +33,8 @@ class ProfileViewModel : BaseViewModel() {
 
     }
 
+    fun isUserLoggedIn(): Boolean {
+        val token = PrefUtil.get(Const.PrefProp.LOGIN_TOKEN, "-1")
+        return token != "-1"
+    }
 }

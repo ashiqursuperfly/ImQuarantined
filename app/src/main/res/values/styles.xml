@@ -41,16 +41,13 @@
 
     <!-- inactive tab icon style -->
     <style name="TextAppearance.BottomNavigationView.Inactive">
-        <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">sans-serif-condensed</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
     </style>
 
     <!-- active tab icon style -->
     <style name="TextAppearance.BottomNavigationView.Active">
-        <item name="android:textSize">16sp</item>
-        <item name="android:fontFamily">sans-serif-condensed</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+
     </style>
 
 

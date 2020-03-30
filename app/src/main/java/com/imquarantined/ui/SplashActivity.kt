@@ -17,7 +17,7 @@ class SplashActivity : BaseSplashActivity() {
     override fun getLayoutId(): Int { return R.layout.activity_splash }
 
     override fun getSplashTimeMillis(): Long {
-        return 1500L
+        return 3500L
     }
 
     override fun afterOnCreate() {

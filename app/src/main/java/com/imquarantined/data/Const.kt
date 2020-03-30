@@ -27,7 +27,8 @@ class Const {
     }
 
     object Api {
-        const val BASE_URL = "http://imquarantined.herokuapp.com/api/" //"http://192.168.0.108:8000/api/"//
+        const val BASE_URL =  "http://imquarantined.herokuapp.com/api/" //"http://192.168.0.108:8000/api/"
+
         object ENDPOINTS {
             const val AUTH = BASE_URL+"auth"
             const val UPDATE_LOCATION = BASE_URL+"location/update"

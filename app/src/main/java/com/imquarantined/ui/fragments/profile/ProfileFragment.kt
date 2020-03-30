@@ -65,7 +65,7 @@ class ProfileFragment : BaseFragment() {
             if(PermissionsUtil.isPermissionAllowed(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)){
                 AndroidUtil.storeImage(AndroidUtil.takescreenshotOfRootView(v), requireContext())
             }
-            else if (PermissionsUtil.isPermissionDenied(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+/*            else if (PermissionsUtil.isPermissionDenied(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) && mProfileViewModel.isUserLoggedIn()){
                 showToast("Cannot Share, Without Storage Permission. Please Enable Storage Permission")
                 startActivity(
                     Intent(
@@ -74,6 +74,7 @@ class ProfileFragment : BaseFragment() {
                     )
                 )
             }
+*/
             else {
                 PermissionsUtil.requestPermission(requireContext(),
                     requireActivity(),

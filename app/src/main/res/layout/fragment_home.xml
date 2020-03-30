@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
 <androidx.constraintlayout.widget.ConstraintLayout
     android:layout_width="match_parent"
@@ -14,25 +15,54 @@
         android:layout_width="250dp"
         android:layout_height="250dp"
         android:layout_marginTop="@dimen/dp40"
-        android:indeterminateDrawable="@drawable/circular_pb"
-        android:progress="80"
-        android:progressDrawable="@drawable/circular_pb"
+        android:progress="0"
+        android:progressDrawable="@drawable/circular_pb_accent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        tools:progress="80"
         />
 
     <TextView
         android:id="@+id/tv_progress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="hh mm ss"
+        tools:text="hh mm ss"
         android:textSize="@dimen/sp20"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorWhite"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/pb_progress"
         app:layout_constraintBottom_toBottomOf="@id/pb_progress"
+        />
+
+
+    <ProgressBar
+        android:id="@+id/pb_dummy"
+        style="?android:progressBarStyleHorizontal"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="@dimen/dp40"
+        android:progress="100"
+        android:progressDrawable="@drawable/circular_pb_primary"
+        app:layout_constraintTop_toBottomOf="@id/pb_progress"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/tv_current_streak"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="3"
+        android:textSize="64sp"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/pb_dummy"
+        app:layout_constraintBottom_toBottomOf="@id/pb_dummy"
         />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
