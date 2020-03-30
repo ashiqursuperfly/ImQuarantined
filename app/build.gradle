@@ -10,6 +10,8 @@ apply plugin: 'kotlin-kapt'
 
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
+apply plugin: 'com.google.firebase.crashlytics'
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
@@ -80,6 +82,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-auth:19.3.0'
     implementation 'com.firebaseui:firebase-ui-auth:4.3.1'
     implementation 'com.facebook.android:facebook-android-sdk:5.15.3'
+    implementation 'com.google.firebase:firebase-crashlytics:17.0.0-beta02'
 
     //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.5.0'
